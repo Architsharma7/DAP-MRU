@@ -12,46 +12,106 @@ export type Leaves = {
   }[];
 }[];
 
-export class BetterMerkleTree {
-  public merkleTree: MerkleTree;
-  public leaves: Leaves;
+export type User = {
+  address: string;
+  currentMatch: string; // Only 1 match at a point
+  matches: number;
+  unmatches: number;
+  preferences: number[]; // Yes or No questions , if the property is in user interest then it is in the arr , otherwise not
+  extras: number[]; // Includes like Age , gender TD , Edu , TOD , Zodiac , Ethnicity , and value is in number format
+  recommendations: string[]; // User address for the recommended profiles, refereshed every certain period};
+};
 
-  constructor(leaves: Leaves) {
-    this.merkleTree = this.createTree(leaves);
-    this.leaves = leaves;
+enum MatchStatus {
+  "REQUESTED",
+  "REJECTED",
+  "MATCHED",
+  "UNMATCHED",
+  "CANCELLED",
+}
+
+export type MatchRequest = {
+  user1: string; // requested By
+  user2: string; // requested To
+  timestamp: number;
+  status: MatchStatus;
+};
+
+export type DatingAppState = {
+  users: User[];
+  matchRequests: MatchRequest[];
+};
+
+export class DatingAppTransport {
+  public merkleTreeUsers: MerkleTree;
+  public users: User[];
+  public merkleTreeRequests: MerkleTree;
+  public matchRequests: MatchRequest[];
+
+  constructor(users: User[], matchRequests: MatchRequest[]) {
+    let { merkleTreeRequests, merkleTreeUsers } = this.createTree(
+      users,
+      matchRequests
+    );
+    this.merkleTreeRequests = merkleTreeRequests;
+    this.merkleTreeUsers = merkleTreeUsers;
+    this.users = users;
+    this.matchRequests = matchRequests;
   }
 
-  createTree(leaves: Leaves) {
-    const hashedLeaves = leaves.map((leaf) => {
+  createTree(users: User[], matchRequests: MatchRequest[]) {
+    const hashedLeavesUsers = users.map((user) => {
+      // TODO : remaining fields can also be included
       return solidityPackedKeccak256(
-        ["address", "uint256", "uint256"],
-        [leaf.address, leaf.balance, leaf.nonce]
+        ["address", "address", "uint256", "uint256"],
+        [user.address, user.currentMatch, user.matches, user.unmatches]
       );
     });
-    return new MerkleTree(hashedLeaves);
+    const merkleTreeUsers = new MerkleTree(hashedLeavesUsers);
+
+    const hashedLeavesRequests = matchRequests.map((request) => {
+      return solidityPackedKeccak256(
+        ["address", "address", "uint256", "uint256"],
+        [request.user1, request.user2, request.timestamp, request.status]
+      );
+    });
+    const merkleTreeRequests = new MerkleTree(hashedLeavesRequests);
+
+    return {
+      merkleTreeUsers,
+      merkleTreeRequests,
+    };
   }
 }
 
-export class ERC20 extends State<Leaves, BetterMerkleTree> {
-  constructor(state: Leaves) {
+export class DatingApp extends State<DatingAppState, DatingAppTransport> {
+  constructor(state: DatingAppState) {
     super(state);
   }
 
   transformer() {
     return {
       wrap: () => {
-        return new BetterMerkleTree(this.state);
+        return new DatingAppTransport(
+          this.state.users,
+          this.state.matchRequests
+        );
       },
-      unwrap: (wrappedState: BetterMerkleTree) => {
-        return wrappedState.leaves;
+      unwrap: (wrappedState: DatingAppTransport) => {
+        return {
+          users: wrappedState.users,
+          matchRequests: wrappedState.matchRequests,
+        };
       },
     };
   }
 
   getRootHash(): BytesLike {
-    if (this.state.length === 0) {
+    if (this.state.users.length === 0) {
       return ZeroHash;
     }
-    return this.transformer().wrap().merkleTree.getRoot();
+
+    // TODO: matchRequests need to be included
+    return this.transformer().wrap().merkleTreeUsers.getRoot();
   }
 }
