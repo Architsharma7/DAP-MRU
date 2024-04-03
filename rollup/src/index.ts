@@ -3,7 +3,7 @@ import express, { Request, Response } from "express";
 import { ActionEvents } from "@stackr/sdk";
 import { Playground } from "@stackr/sdk/plugins";
 import { schemas } from "./actions.ts";
-import { ERC20Machine, mru } from "./erc20.ts";
+import { ERC20Machine, mru } from "./app.ts";
 import { transitions } from "./transitions.ts";
 
 console.log("Starting server...");
