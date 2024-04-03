@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
 import { createAccount } from "../firebase/index";
+import { useRouter } from "next/router";
 
 interface FormData {
   address: string;
@@ -27,6 +28,7 @@ interface FormData {
 }
 
 const Onboarding: React.FC = () => {
+  const router = useRouter();
   const userWallets = useUserWallets();
   const [formData, setFormData] = useState<FormData>({
     address: "",
@@ -52,7 +54,7 @@ const Onboarding: React.FC = () => {
     Dietary: "",
   });
 
-  const handleChange = async(
+  const handleChange = async (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
@@ -65,9 +67,9 @@ const Onboarding: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    createAccount(
+    await createAccount(
       formData.address,
       formData.name,
       formData.age,
@@ -91,6 +93,7 @@ const Onboarding: React.FC = () => {
       formData.Dietary
     );
     console.log(formData);
+    await router.push("/recommendations");
   };
 
   return (

@@ -35,16 +35,17 @@ export default function Home() {
   const { user, handleLogOut, primaryWallet } = useDynamicContext();
   const { userHasEmbeddedWallet } = useEmbeddedWallet();
   const userWallets = useUserWallets();
+  const [userHasSignedUp, setUserHasSignedUp] = useState(false);
 
-  // useEffect(() => {
-  //   const checkUserSignUp = async () => {
-  //     const userHasSignedUpPreviously = await getAddress(
-  //       userWallets[0]?.address
-  //     );
-  //     await setUserHasSignedUp(userHasSignedUpPreviously);
-  //   };
-  //   checkUserSignUp();
-  // }, [userWallets]);
+  useEffect(() => {
+    const checkUserSignUp = async () => {
+      const userHasSignedUpPreviously = await getAddress(
+        userWallets[0]?.address
+      );
+      await setUserHasSignedUp(userHasSignedUpPreviously);
+    };
+    checkUserSignUp();
+  }, [userWallets]);
 
   return (
     <div>
@@ -67,7 +68,13 @@ export default function Home() {
             </p>
           ))}
       </div>
+      {userHasSignedUp ? (
+        <div>
+          <p> Welcome back {user?.email}</p>
+        </div>
+      ) : (
         <Onboarding />
+      )}
     </div>
   );
 }
