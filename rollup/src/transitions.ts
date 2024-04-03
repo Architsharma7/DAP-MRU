@@ -169,8 +169,37 @@ const generate: STF<DatingApp, GenerateInput> = {
     const recommendations: string[] = [];
     // TODO : Recommendation engine
 
-    // get the prefrences
+    // get the prefrences of the user
+    // get the other user and loop over their info , and push the users if they have a match of above 10
+    const preferences = state.users[index].preferences;
 
+    // TODO :  Strictly Check a few factors , and remove others
+
+    state.users.forEach((user) => {
+      let prefMatches: number = 0;
+
+      const userData = user.extras;
+
+      userData.forEach((value, i) => {
+        if (i == 2) {
+          // compare the Gender
+          if (preferences[i] == 1 && value == 0) {
+            prefMatches += 1;
+          } else if (preferences[i] == 0 && value == 1) {
+            prefMatches += 1;
+          } else if (preferences[i] == 2) {
+            prefMatches += 1;
+          }
+        }
+        if (i != 2 && value === preferences[i]) {
+          prefMatches += 1;
+        }
+      });
+
+      if (prefMatches >= 8) {
+        recommendations.push(user.address);
+      }
+    });
     state.users[index].recommendations = recommendations;
     return state;
   },

@@ -7,8 +7,8 @@ export type User = {
   currentMatch: string; // Only 1 match at a point
   matches: number;
   unmatches: number;
-  preferences: number[]; // Yes or No questions , if the property is in user interest then it is in the arr , otherwise not
-  extras: number[]; // Includes like Age , gender TD , Edu , TOD , Zodiac , Ethnicity , and value is in number format
+  preferences: number[]; // User choices , This will be used to get recommended profile
+  extras: number[]; // Users Data , Used to compare other profile with this data
   recommendations: string[]; // User address for the recommended profiles, refereshed every certain period};
 };
 
