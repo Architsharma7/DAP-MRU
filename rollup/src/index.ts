@@ -3,12 +3,12 @@ import express, { Request, Response } from "express";
 import { ActionEvents } from "@stackr/sdk";
 import { Playground } from "@stackr/sdk/plugins";
 import { schemas } from "./actions.ts";
-import { ERC20Machine, mru } from "./app.ts";
+import { DatingMachine, mru } from "./app.ts";
 import { transitions } from "./transitions.ts";
 
 console.log("Starting server...");
 
-const erc20Machine = mru.stateMachines.get<ERC20Machine>("erc-20");
+const erc20Machine = mru.stateMachines.get<DatingMachine>("dating-app");
 
 const app = express();
 app.use(express.json());
@@ -44,6 +44,8 @@ app.get("/blocks/:hash", async (req: Request, res: Response) => {
 
 app.post("/:reducerName", async (req: Request, res: Response) => {
   const { reducerName } = req.params;
+  console.log(req.params);
+
   const actionReducer = transitions[reducerName];
 
   if (!actionReducer) {
@@ -52,6 +54,7 @@ app.post("/:reducerName", async (req: Request, res: Response) => {
   }
   const action = reducerName as keyof typeof schemas;
 
+  console.log(req.body);
   const { msgSender, signature, inputs } = req.body;
 
   const schema = schemas[action];
@@ -78,6 +81,6 @@ app.get("/", (_req: Request, res: Response) => {
   return res.send({ state: erc20Machine?.state });
 });
 
-app.listen(3000, () => {
-  console.log("listening on port 3000");
+app.listen(5050, () => {
+  console.log("listening on port 5050");
 });

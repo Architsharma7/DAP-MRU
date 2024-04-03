@@ -42,7 +42,22 @@ enum ZODIAC {
   VIRGO,
   LIBRA,
   SCORPIO,
+  SAGITTARIUS,
   CAPRICORN,
   AQUARIS,
   PISCES,
+}
+
+export { TypeOfDating, Ethnicity, GTD, ATD, Education, ZODIAC };
+
+enum PREFERENCES {
+  SPORTS,
+  MOVIES,
+  COOKING,
+  FITNESS,
+  TRAVELLING,
+  ART,
+  PET_LOVER,
+  ALCOHOLIC,
+  SMOKING,
 }

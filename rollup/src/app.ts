@@ -9,6 +9,7 @@ type DatingMachine = typeof datingStateMachine;
 const mru = await MicroRollup({
   config: stackrConfig,
   actions: [createAccountSchema, ...Object.values(schemas)],
+  isSandbox: true,
 });
 
 mru.stateMachines.add(datingStateMachine);

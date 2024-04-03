@@ -10,21 +10,24 @@ function generateSchemaFromBase(name: string) {
 }
 
 // createAccountSchema is a schema for creating an account
-export const createAccountSchema = new ActionSchema("createAccount", {
+export const createAccountSchema = new ActionSchema("create", {
   address: SolidityType.ADDRESS,
   preferences: SolidityType.STRING,
   extras: SolidityType.STRING,
 });
 
-export const generateRecommendationsSchema = new ActionSchema("createAccount", {
-  userAddress: SolidityType.ADDRESS,
-});
+export const generateRecommendationsSchema = new ActionSchema(
+  "generateRecommendations",
+  {
+    userAddress: SolidityType.ADDRESS,
+  }
+);
 
 // transferSchema is a collection of all the transfer actions
 // that can be performed on the rollup
 export const schemas = {
   create: createAccountSchema,
-  request: generateSchemaFromBase("requestMatch"),
+  request: generateSchemaFromBase("request"),
   match: generateSchemaFromBase("match"),
   unmatch: generateSchemaFromBase("unmatch"),
   generateRecommendations: generateRecommendationsSchema,

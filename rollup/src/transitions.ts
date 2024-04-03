@@ -47,7 +47,7 @@ const create: STF<DatingApp, CreateAccountInput> = {
       currentMatch: ZeroAddress,
       matches: 0,
       unmatches: 0,
-      preferences: JSON.parse(inputs.address),
+      preferences: JSON.parse(inputs.preferences),
       extras: JSON.parse(inputs.extras),
       recommendations: [],
     };
@@ -167,6 +167,9 @@ const generate: STF<DatingApp, GenerateInput> = {
     }
 
     const recommendations: string[] = [];
+    // TODO : Recommendation engine
+
+    // get the prefrences
 
     state.users[index].recommendations = recommendations;
     return state;

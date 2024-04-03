@@ -102,6 +102,6 @@ export class DatingApp extends State<DatingAppState, DatingAppTransport> {
     }
 
     // TODO: matchRequests need to be included
-    return this.transformer().wrap().merkleTreeUsers.getRoot();
+    return this.transformer().wrap().merkleTreeUsers.getHexRoot();
   }
 }
