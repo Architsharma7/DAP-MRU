@@ -1,143 +1,182 @@
 import { Transitions, STF } from "@stackr/sdk/machine";
-import { ERC20, BetterMerkleTree as StateWrapper } from "./state";
+import {
+  DatingApp,
+  MatchRequest,
+  MatchStatus,
+  DatingAppTransport as StateWrapper,
+} from "./state";
+import { ZeroAddress } from "ethers";
+import { User } from "./state";
 
 // --------- Utilities ---------
-const findIndexOfAccount = (state: StateWrapper, address: string) => {
-  return state.leaves.findIndex((leaf) => leaf.address === address);
+const findUser = (state: StateWrapper, address: string) => {
+  return state.users.findIndex((user) => user.address === address);
 };
 
-type CreateInput = {
+const findRequest = (state: StateWrapper, user1: string, user2: string) => {
+  return state.matchRequests.findIndex(
+    (request) => request.user1 === user1 && request.user2 === user2
+  );
+};
+
+type CreateAccountInput = {
   address: string;
+  preferences: string;
+  extras: string;
 };
 
-type BaseActionInput = {
-  from: string;
-  to: string;
-  amount: number;
+type MatchRequestInput = {
+  user1: string;
+  user2: string;
+  timestamp: number;
+};
+
+type GenerateInput = {
+  userAddress: string;
 };
 
 // --------- State Transition Handlers ---------
-const create: STF<ERC20, CreateInput> = {
+const create: STF<DatingApp, CreateAccountInput> = {
   handler: ({ inputs, state }) => {
     const { address } = inputs;
-    if (state.leaves.find((leaf) => leaf.address === address)) {
+    if (state.users.find((user) => user.address === address)) {
       throw new Error("Account already exists");
     }
-    state.leaves.push({
+    const user: User = {
       address,
-      balance: 0,
-      nonce: 0,
-      allowances: [],
-    });
+      currentMatch: ZeroAddress,
+      matches: 0,
+      unmatches: 0,
+      preferences: JSON.parse(inputs.address),
+      extras: JSON.parse(inputs.extras),
+      recommendations: [],
+    };
+
+    state.users.push(user);
     return state;
   },
 };
 
-const mint: STF<ERC20, BaseActionInput> = {
+const request: STF<DatingApp, MatchRequestInput> = {
   handler: ({ inputs, state }) => {
-    const { to, amount } = inputs;
+    const { user1, user2 } = inputs;
 
-    const index = findIndexOfAccount(state, to);
-    state.leaves[index].balance += amount;
+    // find if the request exists currently for the same match
+    const index1 = findRequest(state, user1, user2);
+    const index2 = findRequest(state, user2, user1);
+
+    if (index1 != -1 && index2 != -1) {
+      throw new Error("Request already exists");
+    }
+
+    const matchRequest: MatchRequest = {
+      user1,
+      user2,
+      timestamp: inputs.timestamp,
+      status: MatchStatus.REQUESTED,
+    };
+    state.matchRequests.push(matchRequest);
     return state;
   },
 };
 
-const burn: STF<ERC20, BaseActionInput> = {
+const match: STF<DatingApp, MatchRequestInput> = {
   handler: ({ inputs, state, msgSender }) => {
-    const { from, amount } = inputs;
+    // address calling this match functin should be the user2 address only
+    const { user1, user2 } = inputs;
 
-    const index = findIndexOfAccount(state, from);
+    const index = findRequest(state, user1, user2);
 
-    if (state.leaves[index].address !== msgSender) {
-      throw new Error("Unauthorized");
+    if (index == -1) {
+      throw new Error("No Request found");
     }
-    state.leaves[index].balance -= amount;
+    state.matchRequests[index].status = MatchStatus.MATCHED;
+    state.matchRequests[index].timestamp = inputs.timestamp;
+
+    // update the users profile too for currentMatch
+    const user1Index = findUser(state, user1);
+
+    if (user1Index == -1) {
+      throw new Error("User 1 Not found");
+    }
+    state.users[user1Index].currentMatch = user2;
+    state.users[user1Index].matches += 1;
+
+    const user2Index = findUser(state, user2);
+
+    if (user2Index == -1) {
+      throw new Error("User 2 Not found");
+    }
+    state.users[user2Index].currentMatch = user1;
+    state.users[user2Index].matches += 1;
+
     return state;
   },
 };
 
-const transfer: STF<ERC20, BaseActionInput> = {
+const unmatch: STF<DatingApp, MatchRequestInput> = {
   handler: ({ inputs, state, msgSender }) => {
-    const { to, from, amount } = inputs;
+    const { user1, user2 } = inputs;
 
-    const fromIndex = findIndexOfAccount(state, from);
-    const toIndex = findIndexOfAccount(state, to);
+    // find if the request exists currently for this match
+    const index1 = findRequest(state, user1, user2);
+    const index2 = findRequest(state, user2, user1);
 
-    // check if the sender is the owner of the account
-    if (state.leaves[fromIndex]?.address !== msgSender) {
-      throw new Error("Unauthorized");
+    let index: number;
+
+    if (index1 != -1) {
+      index = index1;
+    } else if (index2 != -1) {
+      index = index2;
+    } else {
+      throw new Error("No Request found");
     }
 
-    // check if the sender has enough balance
-    if (state.leaves[fromIndex]?.balance < inputs.amount) {
-      throw new Error("Insufficient funds");
-    }
+    state.matchRequests[index].status = MatchStatus.UNMATCHED;
+    state.matchRequests[index].timestamp = inputs.timestamp;
 
-    // check if to account exists
-    if (!state.leaves[toIndex]) {
-      throw new Error("Account does not exist");
-    }
+    // update the users profile too for currentMatch
+    const user1Index = findUser(state, user1);
 
-    state.leaves[fromIndex].balance -= amount;
-    state.leaves[toIndex].balance += amount;
+    if (user1Index == -1) {
+      throw new Error("User 1 Not found");
+    }
+    state.users[user1Index].currentMatch = ZeroAddress;
+    state.users[user1Index].unmatches += 1;
+
+    const user2Index = findUser(state, user2);
+
+    if (user2Index == -1) {
+      throw new Error("User 2 Not found");
+    }
+    state.users[user2Index].currentMatch = ZeroAddress;
+    state.users[user2Index].unmatches += 1;
+
     return state;
   },
 };
 
-const approve: STF<ERC20, BaseActionInput> = {
+const generate: STF<DatingApp, GenerateInput> = {
   handler: ({ inputs, state, msgSender }) => {
-    const { from, to, amount } = inputs;
+    const { userAddress } = inputs;
 
-    const index = findIndexOfAccount(state, from);
-    if (state.leaves[index].address !== msgSender) {
-      throw new Error("Unauthorized");
+    const index = findUser(state, userAddress);
+
+    if (index == -1) {
+      throw new Error("User not Found");
     }
 
-    state.leaves[index].allowances.push({ address: to, amount });
+    const recommendations: string[] = [];
+
+    state.users[index].recommendations = recommendations;
     return state;
   },
 };
 
-const transferFrom: STF<ERC20, BaseActionInput> = {
-  handler: ({ inputs, state, msgSender }) => {
-    const { to, from, amount } = inputs;
-
-    // check if the msgSender has enough allowance from the owner
-    const toIndex = findIndexOfAccount(state, to);
-    const fromIndex = findIndexOfAccount(state, from);
-
-    const allowance = state.leaves[fromIndex].allowances.find(
-      (allowance) => allowance.address === msgSender
-    );
-    if (!allowance || allowance.amount < inputs.amount) {
-      throw new Error("Insufficient allowance");
-    }
-
-    // check if the sender has enough balance
-    if (state.leaves[fromIndex].balance < inputs.amount) {
-      throw new Error("Insufficient funds");
-    }
-
-    state.leaves[fromIndex].balance -= amount;
-    state.leaves[toIndex].balance += amount;
-    state.leaves[fromIndex].allowances = state.leaves[fromIndex].allowances.map(
-      (allowance) => {
-        if (allowance.address === msgSender) {
-          allowance.amount -= amount;
-        }
-        return allowance;
-      }
-    );
-    return state;
-  },
-};
-
-export const transitions: Transitions<ERC20> = {
-  create,
-  mint,
-  burn,
-  transfer,
-  approve,
-  transferFrom,
+export const transitions: Transitions<DatingApp> = {
+  create: create,
+  request: request,
+  match: match,
+  unmatch: unmatch,
+  generateRecommendations: generate,
 };

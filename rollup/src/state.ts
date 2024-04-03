@@ -2,16 +2,6 @@ import { State } from "@stackr/sdk/machine";
 import { BytesLike, ZeroHash, solidityPackedKeccak256 } from "ethers";
 import { MerkleTree } from "merkletreejs";
 
-export type Leaves = {
-  address: string;
-  balance: number;
-  nonce: number;
-  allowances: {
-    address: string;
-    amount: number;
-  }[];
-}[];
-
 export type User = {
   address: string;
   currentMatch: string; // Only 1 match at a point
@@ -22,7 +12,7 @@ export type User = {
   recommendations: string[]; // User address for the recommended profiles, refereshed every certain period};
 };
 
-enum MatchStatus {
+export enum MatchStatus {
   "REQUESTED",
   "REJECTED",
   "MATCHED",
