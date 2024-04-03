@@ -9,6 +9,7 @@ type ERC20Machine = typeof erc20StateMachine;
 const mru = await MicroRollup({
   config: stackrConfig,
   actions: [createAccountSchema, ...Object.values(schemas)],
+  isSandbox: true,
 });
 
 mru.stateMachines.add(erc20StateMachine);
