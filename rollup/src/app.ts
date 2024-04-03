@@ -2,9 +2,9 @@ import { MicroRollup } from "@stackr/sdk";
 import { stackrConfig } from "../stackr.config.ts";
 
 import { createAccountSchema, schemas } from "./actions.ts";
-import { erc20StateMachine } from "./machines.stackr.ts";
+import { datingStateMachine } from "./machines.stackr.ts";
 
-type ERC20Machine = typeof erc20StateMachine;
+type DatingMachine = typeof datingStateMachine;
 
 const mru = await MicroRollup({
   config: stackrConfig,
@@ -12,8 +12,8 @@ const mru = await MicroRollup({
   isSandbox: true,
 });
 
-mru.stateMachines.add(erc20StateMachine);
+mru.stateMachines.add(datingStateMachine);
 
 await mru.init();
 
-export { ERC20Machine, mru };
+export { DatingMachine, mru };

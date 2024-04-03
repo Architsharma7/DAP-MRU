@@ -1,17 +1,17 @@
 import { StateMachine } from "@stackr/sdk/machine";
 import genesisState from "../genesis-state.json";
 import { transitions } from "./transitions";
-import { ERC20 } from "./state";
+import { DatingApp } from "./state";
 
 const STATE_MACHINES = {
-  ERC20: "erc-20",
+  DatingApp: "dating-app",
 };
 
-const erc20StateMachine = new StateMachine({
-  id: STATE_MACHINES.ERC20,
-  stateClass: ERC20,
+const datingStateMachine = new StateMachine({
+  id: STATE_MACHINES.DatingApp,
+  stateClass: DatingApp,
   initialState: genesisState.state,
   on: transitions,
 });
 
-export { STATE_MACHINES, erc20StateMachine };
+export { STATE_MACHINES, datingStateMachine };
