@@ -174,32 +174,45 @@ const generate: STF<DatingApp, GenerateInput> = {
     const preferences = state.users[index].preferences;
 
     // TODO :  Strictly Check a few factors , and remove others
-
     state.users.forEach((user) => {
       let prefMatches: number = 0;
+      let strictMatches: number = 0;
 
       const userData = user.extras;
 
       userData.forEach((value, i) => {
+        // Strict Matches needed
+        if (
+          (i == 0 && value === preferences[i]) ||
+          (i == 1 && value === preferences[i]) ||
+          (i == 4 && value === preferences[i])
+        ) {
+          strictMatches += 1;
+        }
+
+        // compare the Gender
         if (i == 2) {
-          // compare the Gender
           if (preferences[i] == 1 && value == 0) {
-            prefMatches += 1;
+            strictMatches += 1;
           } else if (preferences[i] == 0 && value == 1) {
-            prefMatches += 1;
+            strictMatches += 1;
           } else if (preferences[i] == 2) {
+            strictMatches += 1;
+          }
+        }
+
+        if (i >= 5 || i == 3) {
+          if (value === preferences[i]) {
             prefMatches += 1;
           }
         }
-        if (i != 2 && value === preferences[i]) {
-          prefMatches += 1;
-        }
       });
 
-      if (prefMatches >= 8) {
+      if (prefMatches >= 5 && strictMatches == 4) {
         recommendations.push(user.address);
       }
     });
+
     state.users[index].recommendations = recommendations;
     return state;
   },
