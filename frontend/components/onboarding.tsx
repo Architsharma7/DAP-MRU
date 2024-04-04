@@ -75,7 +75,7 @@ const Onboarding: React.FC = () => {
       ref(storage, `files/${file?.name}`)
     );
     console.log("downloadurl", downloadURL);
-    await setFormData({ ...formData, image: downloadURL });
+    return downloadURL;
   };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -101,8 +101,9 @@ const Onboarding: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-    await uploadImage(formData.rawImage);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const imageURL = await uploadImage(formData.rawImage);
     console.log("image uploaded");
     await createAccount(
       formData.address,
@@ -128,15 +129,15 @@ const Onboarding: React.FC = () => {
       formData.Spiritual,
       formData.Relationship,
       formData.Dietary,
-      formData.image
+      imageURL
     );
-    console.log("data uploaded to db")
+    console.log("data uploaded to db");
     console.log(formData);
     // await router.push("/recommendations");
   };
 
   return (
-    <div>
+    <form onSubmit={(e) => handleSubmit(e)}>
       <label>
         Name:
         <input
@@ -234,8 +235,8 @@ const Onboarding: React.FC = () => {
         </div>
       </label>
       <br />
-      <button type="submit" onClick={() => handleSubmit()}>Submit</button>
-    </div>
+      <button type="submit">Submit</button>
+    </form>
   );
 };
 

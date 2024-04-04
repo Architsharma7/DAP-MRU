@@ -1,5 +1,5 @@
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "./config";
+import { doc, setDoc, getDoc, getFirestore } from "firebase/firestore";
+import { app, db } from "./config";
 
 export const createAccount = async (
   address: string,
@@ -54,12 +54,20 @@ export const createAccount = async (
       Dietary: Dietary,
     },
   };
-  await setDoc(doc(db, "userData", address), docData);
-  console.log("Document written with ID: ", address);
+
+  try {
+    const db = getFirestore();
+    console.log(address);
+    const docRef = doc(db, "userData", `${address}`);
+    await setDoc(docRef, docData);
+    console.log("Document written with ID: ", address);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const getAddress = async (address: string) => {
-  const docRef = await doc(db, "userData", address);
+  const docRef = doc(db, "userData", address);
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {

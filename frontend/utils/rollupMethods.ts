@@ -18,17 +18,23 @@ export type RequestType = {
   timestamp: number;
 };
 
-export type RegisterType = {
+export type RegisterInputType = {
   address: string;
   preferences: number[];
   extras: number[];
+};
+
+export type RegisterType = {
+  address: string;
+  preferences: string;
+  extras: string;
 };
 
 export type RecommendType = {
   userAddress: string;
 };
 
-export const registerUser = async (userData: RegisterType) => {
+export const registerUser = async (userData: RegisterInputType) => {
   const wallet = Wallet.createRandom();
 
   const actionName = "create";
@@ -43,7 +49,12 @@ export const registerUser = async (userData: RegisterType) => {
     console.log(eip712Types);
     const date = Math.round(new Date().getTime() / 1000);
 
-    const payload: RegisterType = userData;
+    const payload: RegisterType = {
+      address: userData.address,
+      preferences: JSON.stringify(userData.preferences),
+      extras: JSON.stringify(userData.extras),
+    };
+
     const signature = await wallet.signTypedData(domain, eip712Types, payload);
 
     const body = JSON.stringify({
@@ -242,6 +253,21 @@ export const getUserDataRollup = async (
   }
 };
 
+export const getUserMatchRequests = async (userAddress: string) => {};
+
+export const getAllUsers = async () => {
+  try {
+    const res = await fetch(`http://localhost:5050/users`);
+
+    const json = await res.json();
+    console.log(json);
+    const data = json.user;
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const generateRecommendations = async (userAddress: string) => {
   const wallet = Wallet.createRandom();
 
@@ -285,3 +311,9 @@ export const generateRecommendations = async (userAddress: string) => {
     console.log(error);
   }
 };
+
+// Initial Feed
+// - All users +  recommendations ( sorted with recommendations on top) -> request
+
+// Requests Feed
+// - Requests from other users -> match
