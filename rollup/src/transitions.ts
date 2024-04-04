@@ -173,8 +173,13 @@ const generate: STF<DatingApp, GenerateInput> = {
     // get the other user and loop over their info , and push the users if they have a match of above 10
     const preferences = state.users[index].preferences;
 
+    // remove the user himself from this data
+    const filteredUsers = state.users.filter(
+      (user) => user.address != userAddress
+    );
+
     // TODO :  Strictly Check a few factors , and remove others
-    state.users.forEach((user) => {
+    filteredUsers.forEach((user) => {
       let prefMatches: number = 0;
       let strictMatches: number = 0;
 
@@ -192,9 +197,9 @@ const generate: STF<DatingApp, GenerateInput> = {
 
         // compare the Gender
         if (i == 2) {
-          if (preferences[i] == 1 && value == 0) {
+          if (preferences[i] == 1 && value == 1) {
             strictMatches += 1;
-          } else if (preferences[i] == 0 && value == 1) {
+          } else if (preferences[i] == 0 && value == 0) {
             strictMatches += 1;
           } else if (preferences[i] == 2) {
             strictMatches += 1;
