@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
 import { createAccount } from "../firebase/index";
 import { useRouter } from "next/router";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { useDropzone } from "react-dropzone";
 
 interface FormData {
   address: string;
@@ -10,8 +17,10 @@ interface FormData {
   gtd: string;
   education: string;
   tod: string;
+  atd: string;
   zodiac: string;
   ethnicity: string;
+  ethnicityChoice: string;
   Sports: number;
   Movies: number;
   Cooking: number;
@@ -25,6 +34,8 @@ interface FormData {
   Spiritual: string;
   Relationship: string;
   Dietary: string;
+  image: string;
+  rawImage: any;
 }
 
 const Onboarding: React.FC = () => {
@@ -37,8 +48,10 @@ const Onboarding: React.FC = () => {
     gtd: "",
     education: "",
     tod: "",
+    atd: "",
     zodiac: "",
     ethnicity: "",
+    ethnicityChoice: "",
     Sports: 0,
     Movies: 0,
     Cooking: 0,
@@ -52,7 +65,41 @@ const Onboarding: React.FC = () => {
     Spiritual: "",
     Relationship: "",
     Dietary: "",
+    image: "",
+    rawImage: null,
   });
+
+  const hiddenFileInput = useRef<HTMLInputElement>(null);
+
+  const uploadImage = async (file: any) => {
+    const storage = getStorage();
+    const storageRef = ref(storage, `files/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("uploading");
+      },
+      (error) => {
+        alert(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setFormData({ ...formData, image: downloadURL });
+        });
+      }
+    );
+  };
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const selectedImage = acceptedFiles[0];
+      setFormData({ ...formData, rawImage: selectedImage });
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleChange = async (
     e: React.ChangeEvent<
@@ -69,6 +116,7 @@ const Onboarding: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    await uploadImage(formData.rawImage);
     await createAccount(
       formData.address,
       formData.name,
@@ -76,8 +124,10 @@ const Onboarding: React.FC = () => {
       formData.gtd,
       formData.education,
       formData.tod,
+      formData.atd,
       formData.zodiac,
       formData.ethnicity,
+      formData.ethnicityChoice,
       formData.Sports,
       formData.Movies,
       formData.Cooking,
@@ -90,7 +140,8 @@ const Onboarding: React.FC = () => {
       formData.Smoking,
       formData.Spiritual,
       formData.Relationship,
-      formData.Dietary
+      formData.Dietary,
+      formData.image
     );
     console.log(formData);
     await router.push("/recommendations");
@@ -149,7 +200,7 @@ const Onboarding: React.FC = () => {
             Select
           </option>
           <option value="male">male</option>
-          <option value="female">male</option>
+          <option value="female">female</option>
         </select>
       </label>
       <br />
@@ -182,9 +233,18 @@ const Onboarding: React.FC = () => {
         </select>
       </label>
       <br />
+      <label>
+        Set Image
+        <div {...getRootProps({ className: "dropzone" })}>
+          <input {...getInputProps()} />
+          <p>Drag n drop some files here, or click to select files</p>
+        </div>
+      </label>
+      <br />
       <button type="submit">Submit</button>
     </form>
   );
 };
+
 
 export default Onboarding;
