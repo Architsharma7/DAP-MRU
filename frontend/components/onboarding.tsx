@@ -2,12 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
 import { createAccount } from "../firebase/index";
 import { useRouter } from "next/router";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useDropzone } from "react-dropzone";
 
 interface FormData {
@@ -69,32 +64,24 @@ const Onboarding: React.FC = () => {
     rawImage: null,
   });
 
-  const hiddenFileInput = useRef<HTMLInputElement>(null);
-
   const uploadImage = async (file: any) => {
     const storage = getStorage();
-    const storageRef = ref(storage, `files/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        console.log("uploading");
-      },
-      (error) => {
-        alert(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setFormData({ ...formData, image: downloadURL });
-        });
-      }
+    const storageRef = ref(storage, `files/${file?.name}`);
+    await uploadBytes(storageRef, file).then((snapshot) => {
+      console.log(snapshot);
+    });
+    console.log(storageRef);
+    const downloadURL = await getDownloadURL(
+      ref(storage, `files/${file?.name}`)
     );
+    console.log("downloadurl", downloadURL);
+    await setFormData({ ...formData, image: downloadURL });
   };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const selectedImage = acceptedFiles[0];
+      console.log(selectedImage);
       setFormData({ ...formData, rawImage: selectedImage });
     }
   }, []);
@@ -114,9 +101,9 @@ const Onboarding: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     await uploadImage(formData.rawImage);
+    console.log("image uploaded");
     await createAccount(
       formData.address,
       formData.name,
@@ -143,12 +130,13 @@ const Onboarding: React.FC = () => {
       formData.Dietary,
       formData.image
     );
+    console.log("data uploaded to db")
     console.log(formData);
-    await router.push("/recommendations");
+    // await router.push("/recommendations");
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <label>
         Name:
         <input
@@ -235,16 +223,20 @@ const Onboarding: React.FC = () => {
       <br />
       <label>
         Set Image
-        <div {...getRootProps({ className: "dropzone" })}>
-          <input {...getInputProps()} />
-          <p>Drag n drop some files here, or click to select files</p>
+        <div className="px-20 py-10 text-center flex">
+          <div {...getRootProps({ className: "dropzone" })}>
+            <input {...getInputProps()} />
+            <button className="cursor-pointer bg-white px-10 py-4 rounded-xl text-black">
+              click to select files
+            </button>
+            {formData.rawImage && <p>{formData.rawImage?.name}</p>}
+          </div>
         </div>
       </label>
       <br />
-      <button type="submit">Submit</button>
-    </form>
+      <button type="submit" onClick={() => handleSubmit()}>Submit</button>
+    </div>
   );
 };
-
 
 export default Onboarding;
