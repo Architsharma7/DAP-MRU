@@ -5,13 +5,15 @@ import { Playground } from "@stackr/sdk/plugins";
 import { schemas } from "./actions.ts";
 import { DatingMachine, mru } from "./app.ts";
 import { transitions } from "./transitions.ts";
+import cors from "cors";
 
 console.log("Starting server...");
 
-const erc20Machine = mru.stateMachines.get<DatingMachine>("dating-app");
+const datingMachine = mru.stateMachines.get<DatingMachine>("dating-app");
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const playground = Playground.init(mru);
 
@@ -78,7 +80,51 @@ events.subscribe(ActionEvents.EXECUTION_STATUS, async (action) => {
 });
 
 app.get("/", (_req: Request, res: Response) => {
-  return res.send({ state: erc20Machine?.state });
+  return res.send({ state: datingMachine?.state });
+});
+
+type ActionName = keyof typeof schemas;
+
+app.get("/getEIP712Types/:action", (_req: Request, res: Response) => {
+  // @ts-ignore
+  const { action }: { action: ActionName } = _req.params;
+
+  const eip712Types = schemas[action].EIP712TypedData.types;
+  return res.send({ eip712Types });
+});
+
+app.get("/users/:userAddress", (_req: Request, res: Response) => {
+  // @ts-ignore
+  const { userAddress }: { userAddress: string } = _req.params;
+  const users = datingMachine?.state.users;
+
+  const user = users?.find((user) => user.address == userAddress);
+
+  if (!user) {
+    res.status(400).send({ error: "Intent Request not found" });
+  }
+  return res.send({ user });
+});
+
+app.get("/users", (_req: Request, res: Response) => {
+  // @ts-ignore
+  const { userAddress }: { userAddress: string } = _req.params;
+  const users = datingMachine?.state.users;
+
+  return res.send({ users });
+});
+
+// only give requests in the requests Status
+app.get("/matchRequests/:userAddress", (_req: Request, res: Response) => {
+  // @ts-ignore
+  const { userAddress }: { userAddress: string } = _req.params;
+  const requests = datingMachine?.state.matchRequests;
+
+  const matchRequests = requests?.find(
+    (request) => request.user2 == userAddress && request.status == 0
+  );
+
+  return res.send({ matchRequests });
 });
 
 app.listen(5050, () => {

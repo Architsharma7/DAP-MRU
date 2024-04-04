@@ -237,6 +237,21 @@ export type UserDataType = {
   recommendations: string[]; // User address for the recommended profiles, refereshed every certain period};
 };
 
+export enum MatchStatus {
+  "REQUESTED",
+  "REJECTED",
+  "MATCHED",
+  "UNMATCHED",
+  "CANCELLED",
+}
+
+export type MatchRequestType = {
+  user1: string; // requested By
+  user2: string; // requested To
+  timestamp: number;
+  status: MatchStatus;
+};
+
 // getUserData , and also for recommendations
 export const getUserDataRollup = async (
   userAddress: string
@@ -253,15 +268,32 @@ export const getUserDataRollup = async (
   }
 };
 
-export const getUserMatchRequests = async (userAddress: string) => {};
+// get User match requests , requested by other users , and currently in requested state
+export const getUserMatchRequests = async (
+  userAddress: string
+): Promise<MatchRequestType[] | undefined> => {
+  try {
+    const res = await fetch(
+      `http://localhost:5050/matchRequests/${userAddress}`
+    );
 
-export const getAllUsers = async () => {
+    const json = await res.json();
+    console.log(json);
+    const data: MatchRequestType[] = json.matchRequests;
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// get all the users in the protocol , might need to filter out the people who already have a current match
+export const getAllUsers = async (): Promise<UserDataType[] | undefined> => {
   try {
     const res = await fetch(`http://localhost:5050/users`);
 
     const json = await res.json();
     console.log(json);
-    const data = json.user;
+    const data = json.users;
     return data;
   } catch (error) {
     console.log(error);
