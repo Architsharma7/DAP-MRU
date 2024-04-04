@@ -8,8 +8,10 @@ export const createAccount = async (
   gtd: string,
   education: string,
   tod: string,
+  atd: string,
   zodiac: string,
   ethnicity: string,
+  ethnicityChoice: string,
   Sports: number,
   Movies: number,
   Cooking: number,
@@ -22,7 +24,8 @@ export const createAccount = async (
   Smoking: string,
   Spiritual: string,
   Relationship: string,
-  Dietary: string
+  Dietary: string,
+  image: string
 ) => {
   const docData = {
     name: name,
@@ -30,8 +33,11 @@ export const createAccount = async (
     gtd: gtd,
     education: education,
     tod: tod,
+    atd: atd,
     zodiac: zodiac,
     ethnicity: ethnicity,
+    ethnicityChoice: ethnicityChoice,
+    image: image,
     preferences: {
       Sports: Sports,
       Movies: Movies,

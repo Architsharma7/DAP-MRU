@@ -8,7 +8,7 @@ import {
 } from "@dynamic-labs/sdk-react-core";
 import Onboarding from "@/components/onboarding";
 import { getAddress } from "@/firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const signTransaction = async (primaryWallet: any) => {
   const publicClient = createPublicClient({
