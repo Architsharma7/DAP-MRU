@@ -30,61 +30,120 @@ const getBody = async (
   other: Wallet
 ) => {
   const walletAddress = wallet.address;
-  const inputs =
-    actionName === "create"
-      ? {
-          address: walletAddress,
-          preferences: JSON.stringify([
-            TypeOfDating.CASUAL,
-            ATD["18_21"],
-            GTD.FEMALE,
-            Education.UNDER_GRADUATE,
-            Ethnicity.ASIAN,
-            SPORTS.CRICKET,
-            RELATIONSHIP.SINGLE,
-            RELIGIOUS_STATUS.NONE,
-            DIETARY.VEGETARIAN,
-            1,
-            1,
-            1,
-            1,
-            0,
-            0,
-            0,
-            0,
-          ]),
-          extras: JSON.stringify([
-            TypeOfDating.CASUAL,
-            ATD["18_21"],
-            GTD.MALE,
-            Education.UNDER_GRADUATE,
-            Ethnicity.ASIAN,
-            SPORTS.FOOTBALL,
-            RELATIONSHIP.SINGLE,
-            RELIGIOUS_STATUS.SPIRITUAL,
-            DIETARY.VEGETARIAN,
-            1,
-            1,
-            1,
-            1,
-            0,
-            0,
-            0,
-            0,
-          ]),
-        }
-      : actionName === "match"
-      ? {
-          user1: other.address,
-          user2: walletAddress,
-          timestamp: Math.round(new Date().getTime() / 1000),
-        }
-      : {
-          user1: walletAddress,
-          user2: other.address,
-          timestamp: Math.round(new Date().getTime() / 1000),
-        };
 
+  const userDataBob = {
+    address: walletAddress,
+    preferences: JSON.stringify([
+      TypeOfDating.CASUAL,
+      ATD["18_21"],
+      GTD.FEMALE,
+      Education.UNDER_GRADUATE,
+      Ethnicity.ASIAN,
+      SPORTS.CRICKET,
+      RELATIONSHIP.SINGLE,
+      RELIGIOUS_STATUS.NONE,
+      DIETARY.VEGETARIAN,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+    ]),
+    extras: JSON.stringify([
+      TypeOfDating.CASUAL,
+      ATD["18_21"],
+      GTD.MALE,
+      Education.UNDER_GRADUATE,
+      Ethnicity.ASIAN,
+      SPORTS.FOOTBALL,
+      RELATIONSHIP.SINGLE,
+      RELIGIOUS_STATUS.SPIRITUAL,
+      DIETARY.VEGETARIAN,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+    ]),
+  };
+  const userDataAlice = {
+    address: walletAddress,
+    preferences: JSON.stringify([
+      TypeOfDating.CASUAL,
+      ATD["18_21"],
+      GTD.MALE,
+      Education.UNDER_GRADUATE,
+      Ethnicity.ASIAN,
+      SPORTS.BADMINTON,
+      RELATIONSHIP.SINGLE,
+      RELIGIOUS_STATUS.AETHIST,
+      DIETARY.VEGAN,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+    ]),
+    extras: JSON.stringify([
+      TypeOfDating.CASUAL,
+      ATD["18_21"],
+      GTD.FEMALE,
+      Education.UNDER_GRADUATE,
+      Ethnicity.ASIAN,
+      SPORTS.CRICKET,
+      RELATIONSHIP.SINGLE,
+      RELIGIOUS_STATUS.NONE,
+      DIETARY.VEGETARIAN,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+    ]),
+  };
+
+  let inputs = {};
+
+  if (actionName == "create") {
+    inputs =
+      walletAddress == "0x4C42F75ceae7b0CfA9588B940553EB7008546C29"
+        ? userDataBob
+        : userDataAlice;
+  } else if (actionName == "request") {
+    inputs = {
+      user1: walletAddress,
+      user2: other.address,
+      timestamp: Math.round(new Date().getTime() / 1000),
+    };
+  } else if (actionName == "match") {
+    inputs = {
+      user1: other.address,
+      user2: walletAddress,
+      timestamp: Math.round(new Date().getTime() / 1000),
+    };
+  } else if (actionName == "unmatch") {
+    inputs = {
+      user1: walletAddress,
+      user2: other.address,
+      timestamp: Math.round(new Date().getTime() / 1000),
+    };
+  } else if (actionName == "generateRecommendations") {
+    inputs = {
+      userAddress: walletAddress,
+    };
+  }
   console.log(inputs);
 
   const signature = await wallet.signTypedData(
