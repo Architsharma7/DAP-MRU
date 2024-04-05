@@ -1,0 +1,170 @@
+import React, { use, useEffect, useState } from "react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import {
+  getUserDataRollup,
+  getUserMatchRequests,
+  getAllUsers,
+  generateRecommendations,
+} from "@/utils/rollupMethods";
+import { useUserWallets } from "@dynamic-labs/sdk-react-core";
+import {
+  MatchRequestType,
+  MatchStatus,
+  UserDataType,
+} from "@/utils/rollupMethods";
+import { getUserData } from "@/firebase";
+
+const Recommendations = () => {
+  const userWallets = useUserWallets();
+  const userAddress = userWallets[0]?.address;
+  const [recommendedProfiles, setRecommendedProfiles] = useState<string[]>([]);
+  const [recommendedProfilesData, setRecommendedProfilesData] = useState<any[]>(
+    []
+  );
+  const [matchRequests, setMatchRequests] = useState<MatchRequestType[]>([]);
+  const [matchRequestsData, setMatchRequestsData] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<UserDataType[]>([]);
+  const [allUsersData, setAllUsersData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await getUserDataRollup(userAddress);
+        const userMatchRequests = await getUserMatchRequests(userAddress);
+        const allUsersData = await getAllUsers();
+        if (userData) {
+          const recommendedProfilesforUser = userData?.recommendations;
+          setRecommendedProfiles(recommendedProfilesforUser);
+          const profilesData = await Promise.all(
+            recommendedProfilesforUser.map((address) => getUserData(address))
+          );
+          setRecommendedProfilesData(profilesData);
+        }
+        if (userMatchRequests) {
+          setMatchRequests(userMatchRequests);
+          const matchRequestsData = await Promise.all(
+            userMatchRequests.map(async (request) => {
+              const user1Data = await getUserData(request.user1);
+              return user1Data;
+            })
+          );
+          setMatchRequestsData(matchRequestsData);
+        }
+        if (allUsersData) {
+          const filteredUsers = allUsersData.filter(
+            (user) => user.currentMatch == "0x"
+          );
+          setAllUsers(filteredUsers);
+          const usersData = await Promise.all(
+            filteredUsers.map(async (user) => {
+              const userData = await getUserData(user.address);
+              return userData;
+            })
+          );
+          setAllUsersData(usersData);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [userAddress]);
+
+  const refreshFeed = async () => {
+    const newRecommendedProfilesData = await generateRecommendations(
+      userAddress
+    );
+    if (newRecommendedProfilesData) {
+      setRecommendedProfiles(newRecommendedProfilesData);
+    }
+  };
+
+  return (
+    <div className="w-screen h-full flex">
+      <Tabs isFitted variant="enclosed" className="w-screen">
+        <TabList mb="1em">
+          <Tab>Recommendations</Tab>
+          <Tab>Request</Tab>
+          <button onClick={() => refreshFeed()} className="bg-blue-500 text-white px-10 py-2 rounded-xl mx-2 my-2">
+            Refresh
+          </button>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <h2>Recommended Addresses</h2>
+            {recommendedProfilesData.length > 0 &&
+            recommendedProfiles.length > 0 ? (
+              <ul>
+                {recommendedProfilesData.map((userData, index) => (
+                  <li key={index}>
+                    <p>Name: {userData?.name}</p>
+                    <p>Age: {userData?.age}</p>
+                    <img src={userData?.image} alt="user image"></img>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div>
+                <div>
+                  {recommendedProfilesData.length > 0 &&
+                    recommendedProfiles.length > 0 && (
+                      <ul>
+                        {recommendedProfilesData.map((userData, index) => (
+                          <li key={index}>
+                            <p>Name: {userData?.name}</p>
+                            <p>Age: {userData?.age}</p>
+                            <img src={userData?.image} alt="user image"></img>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                </div>
+                <div>
+                  {allUsers.length > 0 && allUsersData.length > 0 && (
+                    <div>
+                      <ul>
+                        {allUsersData.map((userData, index) => (
+                          <li key={index}>
+                            <p>name : {userData?.name}</p>
+                            <p>Age: {userData?.age}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </TabPanel>
+          <TabPanel>
+            {matchRequests.length > 0 && matchRequestsData.length > 0 ? (
+              <div>
+                <h2>Match Requests</h2>
+                <ul>
+                  {matchRequests
+                    .filter(
+                      (request) => request.status === MatchStatus.REQUESTED
+                    )
+                    .map((request, index) => (
+                      <li key={index}>
+                        {matchRequestsData[index] && (
+                          <>
+                            <p>Name: {matchRequestsData[index].name}</p>
+                            <p>Age: {matchRequestsData[index].age}</p>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ) : (
+              <p>No match Request Found</p>
+            )}
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </div>
+  );
+};
+
+export default Recommendations;

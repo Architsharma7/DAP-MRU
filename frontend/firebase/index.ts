@@ -12,13 +12,14 @@ export const createAccount = async (
   zodiac: string,
   ethnicity: string,
   ethnicityChoice: string,
-  Sports: number,
-  Movies: number,
-  Cooking: number,
-  Fitness: number,
-  Travelling: number,
+  Sports: string,
+  Movies: string,
+  Cooking: string,
+  Fitness: string,
+  Travelling: string,
+  art: string,
   CoffeeorTea: string,
-  PetLover: number,
+  PetLover: string,
   Personality: string,
   Alcoholic: string,
   Smoking: string,
@@ -44,6 +45,7 @@ export const createAccount = async (
       Cooking: Cooking,
       Fitness: Fitness,
       Travelling: Travelling,
+      art: art,
       CoffeeorTea: CoffeeorTea,
       PetLover: PetLover,
       Personality: Personality,
@@ -74,5 +76,16 @@ export const getAddress = async (address: string) => {
     return true;
   } else {
     return false;
+  }
+};
+
+export const getUserData = async (address: string) => {
+  const docRef = doc(db, "userData", address);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    return null;
   }
 };

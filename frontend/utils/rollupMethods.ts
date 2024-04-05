@@ -43,7 +43,6 @@ export const registerUser = async (userData: RegisterInputType) => {
     const response = await fetch(
       `http://localhost:5050/getEIP712Types/${actionName}`
     );
-    // console.log(response);
 
     const eip712Types = (await response.json()).eip712Types;
     console.log(eip712Types);
@@ -338,7 +337,9 @@ export const generateRecommendations = async (userAddress: string) => {
     const json = await res.json();
     console.log(`Response: ${JSON.stringify(json, null, 2)}`);
     console.log(json);
-    return { ack: json };
+    // return { ack: json };
+    const data = json.recommendations;
+    return data;
   } catch (error) {
     console.log(error);
   }
