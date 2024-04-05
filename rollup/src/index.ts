@@ -93,10 +93,15 @@ app.get("/getEIP712Types/:action", (_req: Request, res: Response) => {
   return res.send({ eip712Types });
 });
 
-app.get("/users/:userAddress", (_req: Request, res: Response) => {
+app.get("/user/:userAddress", (_req: Request, res: Response) => {
   // @ts-ignore
+
   const { userAddress }: { userAddress: string } = _req.params;
   const users = datingMachine?.state.users;
+
+  if (!userAddress) {
+    res.status(400).send({ error: "Invalid Address" });
+  }
 
   const user = users?.find((user) => user.address == userAddress);
 

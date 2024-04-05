@@ -30,8 +30,10 @@ const Recommendations = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log(userAddress);
       try {
         const userData = await getUserDataRollup(userAddress);
+        console.log(userData);
         const userMatchRequests = await getUserMatchRequests(userAddress);
         const allUsersData = await getAllUsers();
         if (userData) {
@@ -54,7 +56,8 @@ const Recommendations = () => {
         }
         if (allUsersData) {
           const filteredUsers = allUsersData.filter(
-            (user) => user.currentMatch == "0x"
+            (user) =>
+              user.currentMatch == "0x0000000000000000000000000000000000000000"
           );
           setAllUsers(filteredUsers);
           const usersData = await Promise.all(
@@ -63,13 +66,18 @@ const Recommendations = () => {
               return userData;
             })
           );
+
+          console.log(usersData);
           setAllUsersData(usersData);
         }
       } catch (error) {
         console.log(error);
       }
     };
-    fetchData();
+
+    if (userAddress) {
+      fetchData();
+    }
   }, [userAddress]);
 
   const refreshFeed = async () => {

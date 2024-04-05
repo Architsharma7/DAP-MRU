@@ -9,7 +9,7 @@ import {
   getDownloadURL,
   list,
 } from "firebase/storage";
-import { useDropzone } from "react-dropzone";
+import Dropzone, { useDropzone } from "react-dropzone";
 import { RegisterInputType, registerUser } from "@/utils/rollupMethods";
 import {
   mapFormDataToPreferences,
@@ -91,15 +91,15 @@ const Onboarding: React.FC = () => {
     return downloadURL;
   };
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      const selectedImage = acceptedFiles[0];
-      console.log(selectedImage);
-      setFormData({ ...formData, rawImage: selectedImage });
-    }
-  }, []);
+  // const onDrop = useCallback((acceptedFiles: File[]) => {
+  //   if (acceptedFiles.length > 0) {
+  //     const selectedImage = acceptedFiles[0];
+  //     console.log(selectedImage);
+  //     setFormData({ ...formData, rawImage: selectedImage });
+  //   }
+  // }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  // const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleChange = async (
     e: React.ChangeEvent<
@@ -551,7 +551,7 @@ const Onboarding: React.FC = () => {
       <br />
       <label>
         Set Image
-        <div className="px-20 py-10 text-center flex">
+        {/* <div className="px-20 py-10 text-center flex">
           <div {...getRootProps({ className: "dropzone" })}>
             <input {...getInputProps()} />
             <button className="cursor-pointer bg-white px-10 py-4 rounded-xl text-black">
@@ -559,6 +559,28 @@ const Onboarding: React.FC = () => {
             </button>
             {formData.rawImage && <p>{formData.rawImage?.name}</p>}
           </div>
+        </div> */}
+        <div className="px-20 py-10 text-center flex">
+          <Dropzone
+            onDrop={(acceptedFiles) => {
+              if (acceptedFiles.length > 0) {
+                const selectedImage = acceptedFiles[0];
+                console.log(selectedImage);
+                setFormData({ ...formData, rawImage: selectedImage });
+              }
+            }}
+          >
+            {({ getRootProps, getInputProps }) => (
+              <section>
+                <div {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <p className="cursor-pointer bg-white px-10 py-4 rounded-xl text-black">
+                    click to select files
+                  </p>
+                </div>
+              </section>
+            )}
+          </Dropzone>
         </div>
       </label>
       <br />

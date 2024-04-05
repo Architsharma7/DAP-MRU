@@ -256,8 +256,7 @@ export const getUserDataRollup = async (
   userAddress: string
 ): Promise<UserDataType | undefined> => {
   try {
-    const res = await fetch(`http://localhost:5050/users/${userAddress}`);
-
+    const res = await fetch(`http://localhost:5050/user/${userAddress}`);
     const json = await res.json();
     console.log(json);
     const data = json.user;
