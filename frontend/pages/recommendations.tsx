@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import {
   getUserDataRollup,
@@ -7,6 +7,7 @@ import {
   generateRecommendations,
   requestMatch,
   match,
+  unmatch,
 } from "@/utils/rollupMethods";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
 import {
@@ -23,6 +24,7 @@ const Recommendations = () => {
   const [recommendedProfilesData, setRecommendedProfilesData] = useState<any[]>(
     []
   );
+  const [userMatchData, setUserMatchData] = useState<any>([]);
   const [matchRequests, setMatchRequests] = useState<MatchRequestType[]>([]);
   const [matchRequestsData, setMatchRequestsData] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<UserDataType[]>([]);
@@ -34,6 +36,10 @@ const Recommendations = () => {
       try {
         const userData = await getUserDataRollup(userAddress);
         console.log(userData);
+        if (userData && userData.currentMatch) {
+          const usermatchdata = await getUserData(userData.currentMatch);
+          setUserMatchData(usermatchdata);
+        }
         const userMatchRequests = await getUserMatchRequests(userAddress);
         const allUsersData = await getAllUsers();
         if (userData) {
@@ -123,12 +129,22 @@ const Recommendations = () => {
     console.log(matchreq);
   };
 
+  const handleUnMatch = async (otherAddress: string) => {
+    const requestData = {
+      userAddress: userAddress,
+      otherAddress: otherAddress,
+    };
+    const unmatchreq = await unmatch(requestData);
+    console.log(unmatchreq);
+  };
+
   return (
     <div className="w-screen h-full flex">
       <Tabs isFitted variant="enclosed" className="w-screen">
         <TabList mb="1em">
           <Tab>Recommendations</Tab>
           <Tab>Request</Tab>
+          <Tab>Matches</Tab>
           <button
             onClick={() => refreshFeed()}
             className="bg-blue-500 text-white px-10 py-2 rounded-xl mx-2 my-2"
@@ -171,7 +187,7 @@ const Recommendations = () => {
                       <ul>
                         {recommendedProfilesData.map((userData, index) => (
                           <li key={index}>
-                             <p>from recommended</p>
+                            <p>from recommended</p>
                             <p>Name: {userData?.name}</p>
                             <p>Age: {userData?.age}</p>
                             <img src={userData?.image} alt="user image"></img>
@@ -202,7 +218,7 @@ const Recommendations = () => {
                       <ul>
                         {allUsersData.map((userData, index) => (
                           <li key={index}>
-                             <p>from all users</p>
+                            <p>from all users</p>
                             <p>name : {userData?.name}</p>
                             <p>Age: {userData?.age}</p>
                             <img src={userData?.image} alt="user image"></img>
@@ -261,6 +277,24 @@ const Recommendations = () => {
             ) : (
               <p>No match Request Found</p>
             )}
+          </TabPanel>
+          <TabPanel>
+            <div>
+              <h2>Matches</h2>
+              {userMatchData ? (
+                <>
+                  <p>Name: {userMatchData?.name}</p>
+                  <p>Age: {userMatchData?.age}</p>
+                  <button onClick={() => handleUnMatch(userMatchData?.address)}>
+                    unmatch
+                  </button>
+                </>
+              ) : (
+                <div>
+                  <p>No matches yet</p>
+                </div>
+              )}
+            </div>
           </TabPanel>
         </TabPanels>
       </Tabs>
