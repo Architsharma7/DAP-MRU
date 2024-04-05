@@ -30,6 +30,7 @@ export const createAccount = async (
 ) => {
   const docData = {
     name: name,
+    address: address,
     age: age,
     gtd: gtd,
     education: education,

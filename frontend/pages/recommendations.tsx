@@ -5,6 +5,8 @@ import {
   getUserMatchRequests,
   getAllUsers,
   generateRecommendations,
+  requestMatch,
+  match,
 } from "@/utils/rollupMethods";
 import { useUserWallets } from "@dynamic-labs/sdk-react-core";
 import {
@@ -79,13 +81,47 @@ const Recommendations = () => {
     }
   };
 
+  const handleRequestMatch = async (otherAddress: string) => {
+    const requestData = {
+      userAddress: userAddress,
+      otherAddress: otherAddress,
+    };
+    const request = await requestMatch(requestData);
+    console.log(request);
+    if (recommendedProfiles.includes(otherAddress)) {
+      setRecommendedProfiles((prevProfiles) =>
+        prevProfiles.filter((address) => address !== otherAddress)
+      );
+    }
+  };
+
+  const handleRejectRecommended = async (otherAddress: string) => {
+    if (recommendedProfiles.includes(otherAddress)) {
+      setRecommendedProfiles((prevProfiles) =>
+        prevProfiles.filter((address) => address !== otherAddress)
+      );
+    }
+  };
+
+  const handleMatch = async (otherAddress: string) => {
+    const requestData = {
+      userAddress: userAddress,
+      otherAddress: otherAddress,
+    };
+    const matchreq = await match(requestData);
+    console.log(matchreq);
+  };
+
   return (
     <div className="w-screen h-full flex">
       <Tabs isFitted variant="enclosed" className="w-screen">
         <TabList mb="1em">
           <Tab>Recommendations</Tab>
           <Tab>Request</Tab>
-          <button onClick={() => refreshFeed()} className="bg-blue-500 text-white px-10 py-2 rounded-xl mx-2 my-2">
+          <button
+            onClick={() => refreshFeed()}
+            className="bg-blue-500 text-white px-10 py-2 rounded-xl mx-2 my-2"
+          >
             Refresh
           </button>
         </TabList>
@@ -100,6 +136,18 @@ const Recommendations = () => {
                     <p>Name: {userData?.name}</p>
                     <p>Age: {userData?.age}</p>
                     <img src={userData?.image} alt="user image"></img>
+                    <button
+                      onClick={() => handleRequestMatch(userData?.address)}
+                      className="bg-blue-500 text-white rounded-xl"
+                    >
+                      💜
+                    </button>
+                    <button
+                      onClick={() => handleRejectRecommended(userData?.address)}
+                      className="bg-red-500 text-white rounded-xl"
+                    >
+                      ❌
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -114,6 +162,22 @@ const Recommendations = () => {
                             <p>Name: {userData?.name}</p>
                             <p>Age: {userData?.age}</p>
                             <img src={userData?.image} alt="user image"></img>
+                            <button
+                              onClick={() =>
+                                handleRequestMatch(userData?.address)
+                              }
+                              className="bg-blue-500 text-white rounded-xl"
+                            >
+                              💜
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleRejectRecommended(userData?.address)
+                              }
+                              className="bg-red-500 text-white rounded-xl"
+                            >
+                              ❌
+                            </button>
                           </li>
                         ))}
                       </ul>
@@ -127,6 +191,17 @@ const Recommendations = () => {
                           <li key={index}>
                             <p>name : {userData?.name}</p>
                             <p>Age: {userData?.age}</p>
+                            <button
+                              onClick={() =>
+                                handleRequestMatch(userData?.address)
+                              }
+                              className="bg-blue-500 text-white rounded-xl"
+                            >
+                              💜
+                            </button>
+                            <button className="bg-red-500 text-white rounded-xl">
+                              ❌
+                            </button>
                           </li>
                         ))}
                       </ul>
@@ -151,6 +226,17 @@ const Recommendations = () => {
                           <>
                             <p>Name: {matchRequestsData[index].name}</p>
                             <p>Age: {matchRequestsData[index].age}</p>
+                            <button
+                              onClick={() =>
+                                handleMatch(matchRequestsData[index].address)
+                              }
+                              className="bg-blue-500 text-white rounded-xl"
+                            >
+                              💜
+                            </button>
+                            <button className="bg-red-500 text-white rounded-xl">
+                              ❌
+                            </button>
                           </>
                         )}
                       </li>

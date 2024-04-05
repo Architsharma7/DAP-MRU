@@ -191,7 +191,7 @@ const Onboarding: React.FC = () => {
     console.log(formData);
     console.log(userData);
     await registerUser(userData);
-    // await router.push("/recommendations");
+    await router.push("/recommendations");
   };
 
   return (
