@@ -20,6 +20,7 @@ export interface FormData {
   address: string;
   name: string;
   age: number;
+  gender: string;
   gtd: string;
   education: string;
   tod: string;
@@ -52,6 +53,7 @@ const Onboarding: React.FC = () => {
     address: "",
     name: "",
     age: 0,
+    gender: "",
     gtd: "",
     education: "",
     tod: "",
@@ -164,6 +166,7 @@ const Onboarding: React.FC = () => {
       formData.address,
       formData.name,
       formData.age,
+      formData.gender,
       formData.gtd,
       formData.education,
       formData.tod,
@@ -216,6 +219,23 @@ const Onboarding: React.FC = () => {
           onChange={handleChange}
           className="text-black"
         />
+      </label>
+      <br />
+      <label>
+        Gender:
+        <select
+          name="gender"
+          value={formData.gender}
+          onChange={handleChange}
+          className="text-black"
+        >
+          <option value="" className="text-black">
+            Select
+          </option>
+          <option value="MALE">male</option>
+          <option value="FEMALE">female</option>
+          <option value="BOTH">both</option>
+        </select>
       </label>
       <br />
       <label>

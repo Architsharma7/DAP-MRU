@@ -125,7 +125,7 @@ app.get("/matchRequests/:userAddress", (_req: Request, res: Response) => {
   const { userAddress }: { userAddress: string } = _req.params;
   const requests = datingMachine?.state.matchRequests;
 
-  const matchRequests = requests?.find(
+  const matchRequests = requests?.filter(
     (request) => request.user2 == userAddress && request.status == 0
   );
 

@@ -52,12 +52,15 @@ const Recommendations = () => {
               return user1Data;
             })
           );
+          console.log(matchRequestsData);
           setMatchRequestsData(matchRequestsData);
         }
         if (allUsersData) {
           const filteredUsers = allUsersData.filter(
             (user) =>
-              user.currentMatch == "0x0000000000000000000000000000000000000000"
+              user.currentMatch ==
+                "0x0000000000000000000000000000000000000000" &&
+              user.address !== userAddress
           );
           setAllUsers(filteredUsers);
           const usersData = await Promise.all(
@@ -141,6 +144,7 @@ const Recommendations = () => {
               <ul>
                 {recommendedProfilesData.map((userData, index) => (
                   <li key={index}>
+                    <p>from recommended</p>
                     <p>Name: {userData?.name}</p>
                     <p>Age: {userData?.age}</p>
                     <img src={userData?.image} alt="user image"></img>
@@ -167,6 +171,7 @@ const Recommendations = () => {
                       <ul>
                         {recommendedProfilesData.map((userData, index) => (
                           <li key={index}>
+                             <p>from recommended</p>
                             <p>Name: {userData?.name}</p>
                             <p>Age: {userData?.age}</p>
                             <img src={userData?.image} alt="user image"></img>
@@ -197,8 +202,10 @@ const Recommendations = () => {
                       <ul>
                         {allUsersData.map((userData, index) => (
                           <li key={index}>
+                             <p>from all users</p>
                             <p>name : {userData?.name}</p>
                             <p>Age: {userData?.age}</p>
+                            <img src={userData?.image} alt="user image"></img>
                             <button
                               onClick={() =>
                                 handleRequestMatch(userData?.address)

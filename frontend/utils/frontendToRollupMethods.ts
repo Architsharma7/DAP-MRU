@@ -11,7 +11,7 @@ import {
   RELIGIOUS_STATUS,
   DIETARY,
   PREFERENCES,
-  USER_DATA
+  USER_DATA,
 } from "../components/types";
 
 export const mapFormDataToPreferences = (formData: FormData): PREFERENCES => {
@@ -64,10 +64,9 @@ export const mapFormDataToPreferences = (formData: FormData): PREFERENCES => {
 
 export const mapFormDataToUserData = (formData: FormData): USER_DATA => {
   const {
-    gtd,
     education,
     tod,
-    atd,
+    age,
     ethnicity,
     Sports,
     Movies,
@@ -81,16 +80,30 @@ export const mapFormDataToUserData = (formData: FormData): USER_DATA => {
     Spiritual,
     Relationship,
     Dietary,
+    gender,
   } = formData;
+
+  const getATDFromAge = (age: number): ATD | undefined => {
+    if (age <= 18) {
+      return ATD["18_"];
+    } else if (age >= 18 && age < 21) {
+      return ATD["18_21"];
+    } else if (age >= 21 && age < 25) {
+      return ATD["21_25"];
+    } else if (age >= 25 && age < 30) {
+      return ATD["25_30"];
+    } else if (age >= 30) {
+      return ATD["_30"];
+    }
+  };
 
   return {
     TYPE_OF_DATING:
       TypeOfDating[tod.toUpperCase() as keyof typeof TypeOfDating],
-    ATD: ATD[atd.toUpperCase() as keyof typeof ATD],
-    GTD: GTD[gtd.toUpperCase() as keyof typeof GTD],
+    ATD: getATDFromAge(age) as ATD,
+    GTD: GTD[gender.toUpperCase() as keyof typeof GTD],
     EDUCATION: Education[education.toUpperCase() as keyof typeof Education],
-    ETHNICITY:
-      Ethnicity[ethnicity.toUpperCase() as keyof typeof Ethnicity],
+    ETHNICITY: Ethnicity[ethnicity.toUpperCase() as keyof typeof Ethnicity],
     SPORTS: SPORTS[Sports.toUpperCase() as keyof typeof SPORTS],
     RELATIONSHIP:
       RELATIONSHIP[Relationship.toUpperCase() as keyof typeof RELATIONSHIP],
@@ -108,4 +121,4 @@ export const mapFormDataToUserData = (formData: FormData): USER_DATA => {
     ALCOHOLIC: Alcoholic === "true" ? 1 : 0,
     SMOKING: Smoking === "true" ? 1 : 0,
   };
-}
+};
