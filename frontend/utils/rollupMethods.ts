@@ -6,8 +6,8 @@ dotenv.config();
 const domain = {
   name: "Stackr MVP v0",
   version: "1",
-  chainId: 28,
-  verifyingContract: "0xB7E6d84675F51F1bf29AFE0DB31B1B2A6fB798aC",
+  chainId: 69420,
+  verifyingContract: "0xD72Cbc83B89cF73Cc704c0daFf20DC07C17312f5",
   salt: "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
 };
 
@@ -48,18 +48,18 @@ export const registerUser = async (userData: RegisterInputType) => {
     console.log(eip712Types);
     const date = Math.round(new Date().getTime() / 1000);
 
-    const payload: RegisterType = {
+    const inputs: RegisterType = {
       address: userData.address,
       preferences: JSON.stringify(userData.preferences),
       extras: JSON.stringify(userData.extras),
     };
 
-    const signature = await wallet.signTypedData(domain, eip712Types, payload);
+    const signature = await wallet.signTypedData(domain, eip712Types, inputs);
 
     const body = JSON.stringify({
       msgSender: wallet.address,
       signature,
-      payload,
+      inputs,
     });
 
     const res = await fetch(`http://localhost:5050/${actionName}`, {
@@ -97,18 +97,18 @@ export const requestMatch = async (requestData: {
     console.log(eip712Types);
     const date = Math.round(new Date().getTime() / 1000);
 
-    const payload: RequestType = {
+    const inputs: RequestType = {
       user1: requestData.userAddress,
       user2: requestData.otherAddress,
       timestamp: date,
     };
 
-    const signature = await wallet.signTypedData(domain, eip712Types, payload);
+    const signature = await wallet.signTypedData(domain, eip712Types, inputs);
 
     const body = JSON.stringify({
       msgSender: wallet.address,
       signature,
-      payload,
+      inputs,
     });
 
     const res = await fetch(`http://localhost:5050/${actionName}`, {
@@ -146,18 +146,18 @@ export const match = async (requestData: {
     console.log(eip712Types);
     const date = Math.round(new Date().getTime() / 1000);
 
-    const payload: RequestType = {
+    const inputs: RequestType = {
       user1: requestData.otherAddress,
       user2: requestData.userAddress,
       timestamp: date,
     };
 
-    const signature = await wallet.signTypedData(domain, eip712Types, payload);
+    const signature = await wallet.signTypedData(domain, eip712Types, inputs);
 
     const body = JSON.stringify({
       msgSender: wallet.address,
       signature,
-      payload,
+      inputs,
     });
 
     const res = await fetch(`http://localhost:5050/${actionName}`, {
@@ -195,18 +195,18 @@ export const unmatch = async (requestData: {
     console.log(eip712Types);
     const date = Math.round(new Date().getTime() / 1000);
 
-    const payload: RequestType = {
+    const inputs: RequestType = {
       user1: requestData.userAddress,
       user2: requestData.otherAddress,
       timestamp: date,
     };
 
-    const signature = await wallet.signTypedData(domain, eip712Types, payload);
+    const signature = await wallet.signTypedData(domain, eip712Types, inputs);
 
     const body = JSON.stringify({
       msgSender: wallet.address,
       signature,
-      payload,
+      inputs,
     });
 
     const res = await fetch(`http://localhost:5050/${actionName}`, {
@@ -314,16 +314,16 @@ export const generateRecommendations = async (userAddress: string) => {
     console.log(eip712Types);
     const date = Math.round(new Date().getTime() / 1000);
 
-    const payload: RecommendType = {
+    const inputs: RecommendType = {
       userAddress: userAddress,
     };
 
-    const signature = await wallet.signTypedData(domain, eip712Types, payload);
+    const signature = await wallet.signTypedData(domain, eip712Types, inputs);
 
     const body = JSON.stringify({
       msgSender: wallet.address,
       signature,
-      payload,
+      inputs,
     });
 
     const res = await fetch(`http://localhost:5050/${actionName}`, {
