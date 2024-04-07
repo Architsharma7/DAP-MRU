@@ -16,6 +16,9 @@ import {
   UserDataType,
 } from "@/utils/rollupMethods";
 import { getUserData } from "@/firebase";
+import nomatches from "../public/nomatches.png";
+import norequests from "../public/norequests.png";
+import Image from "next/image";
 
 const Recommendations = () => {
   const userWallets = useUserWallets();
@@ -139,7 +142,7 @@ const Recommendations = () => {
   };
 
   return (
-    <div className="w-screen h-full flex">
+    <div className="w-screen h-full flex mt-3">
       <Tabs isFitted variant="enclosed" className="w-screen">
         <TabList mb="1em">
           <Tab>Recommendations</Tab>
@@ -154,85 +157,278 @@ const Recommendations = () => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <h2>Recommended Addresses</h2>
             {recommendedProfilesData.length > 0 &&
             recommendedProfiles.length > 0 ? (
-              <ul>
-                {recommendedProfilesData.map((userData, index) => (
-                  <li key={index}>
-                    <p>from recommended</p>
-                    <p>Name: {userData?.name}</p>
-                    <p>Age: {userData?.age}</p>
-                    <img src={userData?.image} alt="user image"></img>
-                    <button
-                      onClick={() => handleRequestMatch(userData?.address)}
-                      className="bg-blue-500 text-white rounded-xl"
+              <div className="flex flex-col justify-center mx-auto">
+                <ul className="flex flex-col justify-center mx-auto">
+                  {recommendedProfilesData.map((userData, index) => (
+                    <li
+                      className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                      key={index}
                     >
-                      💜
-                    </button>
-                    <button
-                      onClick={() => handleRejectRecommended(userData?.address)}
-                      className="bg-red-500 text-white rounded-xl"
-                    >
-                      ❌
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      <img
+                        src={userData?.image}
+                        alt="user image"
+                        className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
+                      ></img>
+                      <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">Name</p>
+                          <p className="text-lg text-black">{userData?.name}</p>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">Age</p>
+                          <p className="text-lg text-black">{userData?.age}</p>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">Gender</p>
+                          <p className="text-lg text-black">
+                            {userData?.gender}
+                          </p>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">Ethinicty</p>
+                          <p className="text-lg text-black">
+                            {userData?.ethnicity}
+                          </p>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">Zodiac</p>
+                          <p className="text-lg text-black">
+                            {userData?.zodiac}
+                          </p>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">
+                            Type of Dating prefered
+                          </p>
+                          <p className="text-lg text-black">{userData?.tod}</p>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">
+                            Favourite Sport
+                          </p>
+                          <p className="text-lg text-black">
+                            {userData?.Sports}
+                          </p>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <p className="text-gray-600 text-sm">
+                            Likes Travelling
+                          </p>
+                          <p className="text-lg text-black">
+                            {userData?.Travelling}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex w-full justify-evenly">
+                        <button
+                          onClick={() => handleRequestMatch(userData?.address)}
+                          className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                        >
+                          💜
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleRejectRecommended(userData?.address)
+                          }
+                          className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                        >
+                          ❌
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : (
               <div>
                 <div>
                   {recommendedProfilesData.length > 0 &&
                     recommendedProfiles.length > 0 && (
-                      <ul>
-                        {recommendedProfilesData.map((userData, index) => (
-                          <li key={index}>
-                            <p>from recommended</p>
-                            <p>Name: {userData?.name}</p>
-                            <p>Age: {userData?.age}</p>
-                            <img src={userData?.image} alt="user image"></img>
-                            <button
-                              onClick={() =>
-                                handleRequestMatch(userData?.address)
-                              }
-                              className="bg-blue-500 text-white rounded-xl"
+                      <div className="flex flex-col justify-center mx-auto">
+                        <ul className="flex flex-col justify-center mx-auto">
+                          {recommendedProfilesData.map((userData, index) => (
+                            <li
+                              className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                              key={index}
                             >
-                              💜
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleRejectRecommended(userData?.address)
-                              }
-                              className="bg-red-500 text-white rounded-xl"
-                            >
-                              ❌
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                              <img
+                                src={userData?.image}
+                                alt="user image"
+                                className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
+                              ></img>
+                              <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">Name</p>
+                                  <p className="text-lg text-black">
+                                    {userData?.name}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">Age</p>
+                                  <p className="text-lg text-black">
+                                    {userData?.age}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">
+                                    Gender
+                                  </p>
+                                  <p className="text-lg text-black">
+                                    {userData?.gender}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">
+                                    Ethinicty
+                                  </p>
+                                  <p className="text-lg text-black">
+                                    {userData?.ethnicity}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">
+                                    Zodiac
+                                  </p>
+                                  <p className="text-lg text-black">
+                                    {userData?.zodiac}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">
+                                    Type of Dating prefered
+                                  </p>
+                                  <p className="text-lg text-black">
+                                    {userData?.tod}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">
+                                    Favourite Sport
+                                  </p>
+                                  <p className="text-lg text-black">
+                                    {userData?.Sports}
+                                  </p>
+                                </div>
+                                <div className="flex flex-col justify-start">
+                                  <p className="text-gray-600 text-sm">
+                                    Likes Travelling
+                                  </p>
+                                  <p className="text-lg text-black">
+                                    {userData?.Travelling}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex w-full justify-evenly">
+                                <button
+                                  onClick={() =>
+                                    handleRequestMatch(userData?.address)
+                                  }
+                                  className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                                >
+                                  💜
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleRejectRecommended(userData?.address)
+                                  }
+                                  className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                                >
+                                  ❌
+                                </button>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
                 </div>
                 <div>
                   {allUsers.length > 0 && allUsersData.length > 0 && (
-                    <div>
-                      <ul>
+                    <div className="flex flex-col justify-center mx-auto">
+                      <ul className="flex flex-col justify-center mx-auto">
                         {allUsersData.map((userData, index) => (
-                          <li key={index}>
-                            <p>from all users</p>
-                            <p>name : {userData?.name}</p>
-                            <p>Age: {userData?.age}</p>
-                            <img src={userData?.image} alt="user image"></img>
-                            <button
-                              onClick={() =>
-                                handleRequestMatch(userData?.address)
-                              }
-                              className="bg-blue-500 text-white rounded-xl"
-                            >
-                              💜
-                            </button>
-                            <button className="bg-red-500 text-white rounded-xl">
-                              ❌
-                            </button>
+                          <li
+                            className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                            key={index}
+                          >
+                            <img
+                              src={userData?.image}
+                              alt="user image"
+                              className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
+                            ></img>
+                            <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Name</p>
+                                <p className="text-lg text-black">
+                                  {userData?.name}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Age</p>
+                                <p className="text-lg text-black">
+                                  {userData?.age}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Gender</p>
+                                <p className="text-lg text-black">
+                                  {userData?.gender}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Ethinicty
+                                </p>
+                                <p className="text-lg text-black">
+                                  {userData?.ethnicity}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Zodiac</p>
+                                <p className="text-lg text-black">
+                                  {userData?.zodiac}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Type of Dating prefered
+                                </p>
+                                <p className="text-lg text-black">
+                                  {userData?.tod}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Favourite Sport
+                                </p>
+                                <p className="text-lg text-black">
+                                  {userData?.Sports}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Likes Travelling
+                                </p>
+                                <p className="text-lg text-black">
+                                  {userData?.Travelling}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex w-full justify-evenly">
+                              <button
+                                onClick={() =>
+                                  handleRequestMatch(userData?.address)
+                                }
+                                className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                              >
+                                💜
+                              </button>
+                              <button className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2">
+                                ❌
+                              </button>
+                            </div>
                           </li>
                         ))}
                       </ul>
@@ -244,30 +440,95 @@ const Recommendations = () => {
           </TabPanel>
           <TabPanel>
             {matchRequests.length > 0 && matchRequestsData.length > 0 ? (
-              <div>
-                <h2>Match Requests</h2>
-                <ul>
+              <div className="flex flex-col justify-center mx-auto">
+                <ul className="flex flex-col justify-center mx-auto">
                   {matchRequests
                     .filter(
                       (request) => request.status === MatchStatus.REQUESTED
                     )
                     .map((request, index) => (
-                      <li key={index}>
+                      <li
+                        className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                        key={index}
+                      >
                         {matchRequestsData[index] && (
                           <>
-                            <p>Name: {matchRequestsData[index].name}</p>
-                            <p>Age: {matchRequestsData[index].age}</p>
-                            <button
-                              onClick={() =>
-                                handleMatch(matchRequestsData[index].address)
-                              }
-                              className="bg-blue-500 text-white rounded-xl"
-                            >
-                              💜
-                            </button>
-                            <button className="bg-red-500 text-white rounded-xl">
-                              ❌
-                            </button>
+                            <img
+                              src={matchRequestsData[index]?.image}
+                              alt="user image"
+                              className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
+                            ></img>
+                            <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Name</p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.name}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Age</p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.age}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Gender</p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.gender}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Ethinicty
+                                </p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.ethnicity}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">Zodiac</p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.zodiac}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Type of Dating prefered
+                                </p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.tod}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Favourite Sport
+                                </p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.Sports}
+                                </p>
+                              </div>
+                              <div className="flex flex-col justify-start">
+                                <p className="text-gray-600 text-sm">
+                                  Likes Travelling
+                                </p>
+                                <p className="text-lg text-black">
+                                  {matchRequestsData[index]?.Travelling}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex w-full justify-evenly">
+                              <button
+                                onClick={() =>
+                                  handleMatch(matchRequestsData[index].address)
+                                }
+                                className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                              >
+                                💜
+                              </button>
+                              <button className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2">
+                                ❌
+                              </button>
+                            </div>
                           </>
                         )}
                       </li>
@@ -275,23 +536,94 @@ const Recommendations = () => {
                 </ul>
               </div>
             ) : (
-              <p>No match Request Found</p>
+              <div className="flex justify-center mx-auto">
+                <Image
+                  width={600}
+                  height={500}
+                  src={norequests}
+                  alt="no matches"
+                  className="rounded-xl"
+                />
+              </div>
             )}
           </TabPanel>
           <TabPanel>
             <div>
-              <h2>Matches</h2>
               {userMatchData ? (
-                <>
-                  <p>Name: {userMatchData?.name}</p>
-                  <p>Age: {userMatchData?.age}</p>
-                  <button onClick={() => handleUnMatch(userMatchData?.address)}>
-                    unmatch
-                  </button>
-                </>
+                <div
+                  className={`border border-gray-400 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                >
+                  <img
+                    src={userMatchData?.image}
+                    alt="user image"
+                    className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
+                  ></img>
+                  <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">Name</p>
+                      <p className="text-lg text-black">
+                        {userMatchData?.name}
+                      </p>
+                    </div>
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">Age</p>
+                      <p className="text-lg text-black">{userMatchData?.age}</p>
+                    </div>
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">Gender</p>
+                      <p className="text-lg text-black">
+                        {userMatchData?.gender}
+                      </p>
+                    </div>
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">Ethinicty</p>
+                      <p className="text-lg text-black">
+                        {userMatchData?.ethnicity}
+                      </p>
+                    </div>
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">Zodiac</p>
+                      <p className="text-lg text-black">
+                        {userMatchData?.zodiac}
+                      </p>
+                    </div>
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">
+                        Type of Dating prefered
+                      </p>
+                      <p className="text-lg text-black">{userMatchData?.tod}</p>
+                    </div>
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">Favourite Sport</p>
+                      <p className="text-lg text-black">
+                        {userMatchData?.Sports}
+                      </p>
+                    </div>
+                    <div className="flex flex-col justify-start">
+                      <p className="text-gray-600 text-sm">Likes Travelling</p>
+                      <p className="text-lg text-black">
+                        {userMatchData?.Travelling}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex w-full justify-center mx-auto">
+                    <button
+                      onClick={() => handleUnMatch(userMatchData?.address)}
+                      className="bg-red-500 text-white rounded-xl w-1/2 mx-auto px-2 py-2 "
+                    >
+                      Unmatch ❌
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <div>
-                  <p>No matches yet</p>
+                <div className="flex justify-center mx-auto">
+                  <Image
+                    width={500}
+                    height={500}
+                    src={nomatches}
+                    alt="no matches"
+                    className="rounded-xl"
+                  />
                 </div>
               )}
             </div>

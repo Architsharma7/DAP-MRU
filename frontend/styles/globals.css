@@ -2,28 +2,147 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  opacity: 0.8
+}
+
+:root {
+  --secondary-glow: conic-gradient(from 10deg at 50% 50%,
+      #fca5a5 0deg,
+      /* Light Red */
+      #f2c3b8 55deg,
+      /* Light Peach */
+      #f0e1d2 120deg,
+      /* Light Gray */
+      #87b4f3 160deg,
+      /* Light Blue */
+      transparent 360deg);
+
+  /* Alternative color combinations for --third-glow */
+
+  --third-glow: conic-gradient(from 90deg at 50% 50%,
+      #fcbf49 0deg,
+      /* Yellow */
+      #ff8162 160deg,
+      /* Salmon */
+      #6dd3ce 120deg,
+      /* Teal */
+      #84d8d9 55deg,
+      /* Light Blue */
+      transparent 360deg);
+}
+
+
+body::before {
+  background: var(--third-glow);
+  border-radius: 50%;
+  width: 50vw;
+  height: 75vw;
+  margin-left: -200px;
+  filter: blur(90px);
+  top: calc(50vh - 50vw/2);
+  left: calc(50vw);
+}
+
+body::after {
+  background: var(--secondary-glow);
+  border-radius: 50%;
+  width: 500px;
+  height: 700px;
+  filter: blur(90px);
+  top: calc(50vh - 50vw/2);
+  left: calc(50vw - 50vw/2);
+}
+
+@keyframes animateBefore {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(200px) scale(0.8);
+
+  }
+
+  100% {
+    transform: translateY(0);
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@keyframes animateAfter {
+  0% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(-250px) scale(1.2);
+
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes animateBefore {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(200px) scale(0.8);
+
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes animateAfter {
+  0% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(-250px) scale(1.2);
+
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 24vh 0 0 0;
+  /* min-height: 100vh; */
 }
 
 @layer utilities {

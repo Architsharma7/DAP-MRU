@@ -7,6 +7,10 @@ import {
 import { DynamicWagmiConnector } from "@dynamic-labs/wagmi-connector";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { ChakraProvider } from "@chakra-ui/react";
+import Navbar from "@/components/navbar";
+import localFont from "@next/font/local";
+
+const myFont = localFont({ src: "./CalSans-SemiBold.woff2" });
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -19,7 +23,10 @@ export default function App({ Component, pageProps }: AppProps) {
         }}
       >
         <DynamicWagmiConnector>
-          <Component {...pageProps} />
+          <main className={myFont.className}>
+            <Navbar />
+            <Component {...pageProps} />
+          </main>
         </DynamicWagmiConnector>
       </DynamicContextProvider>
     </ChakraProvider>

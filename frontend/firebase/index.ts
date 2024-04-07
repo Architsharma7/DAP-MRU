@@ -72,13 +72,17 @@ export const createAccount = async (
 };
 
 export const getAddress = async (address: string) => {
-  const docRef = doc(db, "userData", address);
-  const docSnap = await getDoc(docRef);
+  try {
+    const docRef = doc(db, "userData", address);
+    const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) {
-    return true;
-  } else {
-    return false;
+    if (docSnap.exists()) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 

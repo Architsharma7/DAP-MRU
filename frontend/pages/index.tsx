@@ -9,6 +9,7 @@ import {
 import Onboarding from "@/components/onboarding";
 import { getAddress } from "@/firebase";
 import { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 
 const signTransaction = async (primaryWallet: any) => {
   const publicClient = createPublicClient({
@@ -31,7 +32,7 @@ const signTransaction = async (primaryWallet: any) => {
   console.log(txHash);
 };
 
-export default function Home() {
+const Home: React.FC = () => {
   const { user, handleLogOut, primaryWallet } = useDynamicContext();
   const { userHasEmbeddedWallet } = useEmbeddedWallet();
   const userWallets = useUserWallets();
@@ -42,21 +43,20 @@ export default function Home() {
       const userHasSignedUpPreviously = await getAddress(
         userWallets[0]?.address
       );
-      await setUserHasSignedUp(userHasSignedUpPreviously);
+      setUserHasSignedUp(userHasSignedUpPreviously || false);
     };
     checkUserSignUp();
   }, [userWallets]);
 
   return (
-    <div>
+    <div className="">
       {userHasEmbeddedWallet() ? (
         <div>
-          <button onClick={() => handleLogOut()}>log out</button>
         </div>
       ) : (
         <DynamicWidget />
       )}
-      <div>
+      {/* <div>
         {userWallets &&
           userWallets.map((wallet) => (
             <p key={wallet.id}>
@@ -67,7 +67,7 @@ export default function Home() {
                 : "No embedded wallet"}
             </p>
           ))}
-      </div>
+      </div> */}
       {userHasSignedUp ? (
         <div>
           <p> Welcome back {user?.email}</p>
@@ -78,3 +78,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(Home), { ssr: false });

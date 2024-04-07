@@ -15,6 +15,7 @@ import {
   mapFormDataToPreferences,
   mapFormDataToUserData,
 } from "@/utils/frontendToRollupMethods";
+import dynamic from "next/dynamic";
 
 export interface FormData {
   address: string;
@@ -92,16 +93,6 @@ const Onboarding: React.FC = () => {
     console.log("downloadurl", downloadURL);
     return downloadURL;
   };
-
-  // const onDrop = useCallback((acceptedFiles: File[]) => {
-  //   if (acceptedFiles.length > 0) {
-  //     const selectedImage = acceptedFiles[0];
-  //     console.log(selectedImage);
-  //     setFormData({ ...formData, rawImage: selectedImage });
-  //   }
-  // }, []);
-
-  // const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleChange = async (
     e: React.ChangeEvent<
@@ -198,415 +189,427 @@ const Onboarding: React.FC = () => {
   };
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)}>
-      <label>
-        Name:
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          className="text-black"
-        />
-      </label>
-      <br />
-      <label>
-        Age:
-        <input
-          type="number"
-          name="age"
-          value={formData.age}
-          onChange={handleChange}
-          className="text-black"
-        />
-      </label>
-      <br />
-      <label>
-        Gender:
-        <select
-          name="gender"
-          value={formData.gender}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="" className="text-black">
-            Select
-          </option>
-          <option value="MALE">male</option>
-          <option value="FEMALE">female</option>
-          <option value="BOTH">both</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Gender to Date:
-        <select
-          name="gtd"
-          value={formData.gtd}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="" className="text-black">
-            Select
-          </option>
-          <option value="MALE">male</option>
-          <option value="FEMALE">female</option>
-          <option value="BOTH">both</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Education:
-        <select
-          name="education"
-          value={formData.education}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="" className="text-black">
-            Select
-          </option>
-          <option value="HIGH_SCHOOL">High School</option>
-          <option value="UNDER_GRADUATE">College</option>
-          <option value="POST_GRADUATE">University</option>
-          <option value="PHD_GRADUATE">PHD</option>
-          <option value="NONE">none of the above</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Type of Dating:
-        <select
-          name="tod"
-          value={formData.tod}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="CASUAL">Casual</option>
-          <option value="SERIOUS">Serious</option>
-        </select>
-      </label>
-      <br />
-
-      <label>
-        Age to Date:
-        <select
-          name="atd"
-          value={formData.atd}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="18_">{" < 18"}</option>
-          <option value="18_21">18-21</option>
-          <option value="21_25">21-25</option>
-          <option value="25_30">25-30</option>
-          <option value="30_">30+</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Zodiac Sign:
-        <select
-          name="zodiac"
-          value={formData.zodiac}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="ARIES">Aries</option>
-          <option value="TAURUS">Taurus</option>
-          <option value="GEMINI">Gemini</option>
-          <option value="CANCER">Cancer</option>
-          <option value="LEO">Leo</option>
-          <option value="VIRGO">Virgo</option>
-          <option value="LIBRA">Libra</option>
-          <option value="SCORPIO">Scorpio</option>
-          <option value="SAGITTARIUS">Sagittarius</option>
-          <option value="CAPRICORN">Capricorn</option>
-          <option value="AQUARIUS">Aquarius</option>
-          <option value="PISCES">Pisces</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Ethnicity:
-        <select
-          name="ethnicity"
-          value={formData.ethnicity}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="WHITE">White</option>
-          <option value="MIXED">Mixed</option>
-          <option value="ASIAN">Asian</option>
-          <option value="BLACK">Black</option>
-          <option value="OTHER">Other</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Ethnicity Choice:
-        <select
-          name="ethnicityChoice"
-          value={formData.ethnicityChoice}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="WHITE">White</option>
-          <option value="MIXED">Mixed</option>
-          <option value="ASIAN">Asian</option>
-          <option value="BLACK">Black</option>
-          <option value="OTHER">Other</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Sports Interest:
-        <select
-          name="Sports"
-          value={formData.Sports}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="CRICKET">Cricket</option>
-          <option value="FOOTBALL">Football</option>
-          <option value="TENNIS">Tennis</option>
-          <option value="BASKETBALL">Basketball</option>
-          <option value="GOLF">Golf</option>
-          <option value="BADMINTON">Badminton</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Movie Preference:
-        <select
-          name="Movies"
-          value={formData.Movies}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Cooking Interest:
-        <select
-          name="Cooking"
-          value={formData.Cooking}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Fitness Interest:
-        <select
-          name="Fitness"
-          value={formData.Fitness}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Travelling Interest:
-        <select
-          name="Travelling"
-          value={formData.Travelling}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Art and Craft:
-        <select
-          name="art"
-          value={formData.art}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Coffee or Tea:
-        <select
-          name="CoffeeorTea"
-          value={formData.CoffeeorTea}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="" className="text-black">
-            Select
-          </option>
-          <option value="coffee">Coffee</option>
-          <option value="tea">Tea</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Pet Lover:
-        <select
-          name="PetLover"
-          value={formData.PetLover}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Personality Type:
-        <select
-          name="Personality"
-          value={formData.Personality}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="introvert">Introvert</option>
-          <option value="extrovert">Extrovert</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Alcohol Consumption:
-        <select
-          name="Alcoholic"
-          value={formData.Alcoholic}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Smoking Preference:
-        <select
-          name="Smoking"
-          value={formData.Smoking}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Spiritual Inclination:
-        <select
-          name="Spiritual"
-          value={formData.Spiritual}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="SPIRITUAL">Spiritual</option>
-          <option value="AETHIST">Atheist</option>
-          <option value="NONE">None</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Relationship Status:
-        <select
-          name="Relationship"
-          value={formData.Relationship}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="SINGLE">Single</option>
-          <option value="DIVORCED">Divorced</option>
-          <option value="MARRIED">Married</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Dietary Preference:
-        <select
-          name="Dietary"
-          value={formData.Dietary}
-          onChange={handleChange}
-          className="text-black"
-        >
-          <option value="">Select</option>
-          <option value="VEGETARIAN">Vegetarian</option>
-          <option value="NON_VEGERTARIAN">Non-Vegetarian</option>
-          <option value="VEGAN">Vegan</option>
-        </select>
-      </label>
-      <br />
-      <label>
-        Set Image
-        {/* <div className="px-20 py-10 text-center flex">
-          <div {...getRootProps({ className: "dropzone" })}>
-            <input {...getInputProps()} />
-            <button className="cursor-pointer bg-white px-10 py-4 rounded-xl text-black">
-              click to select files
-            </button>
-            {formData.rawImage && <p>{formData.rawImage?.name}</p>}
-          </div>
-        </div> */}
-        <div className="px-20 py-10 text-center flex">
-          <Dropzone
-            onDrop={(acceptedFiles) => {
-              if (acceptedFiles.length > 0) {
-                const selectedImage = acceptedFiles[0];
-                console.log(selectedImage);
-                setFormData({ ...formData, rawImage: selectedImage });
-              }
-            }}
-          >
-            {({ getRootProps, getInputProps }) => (
-              <section>
-                <div {...getRootProps()}>
-                  <input {...getInputProps()} />
-                  <p className="cursor-pointer bg-white px-10 py-4 rounded-xl text-black">
-                    click to select files
-                  </p>
-                </div>
-              </section>
-            )}
-          </Dropzone>
+    <div className="w-screen">
+      <div className="mx-20 flex flex-col justify-center">
+        <div>
+          <p className="text-3xl font-bold text-black text-center mx-auto mt-10">
+            Onboarding
+          </p>
         </div>
-      </label>
-      <br />
-      <button type="submit">Submit</button>
-    </form>
+        <form className="mt-10" onSubmit={(e) => handleSubmit(e)}>
+          <div className="grid grid-flow-rows grid-rows-6 grid-cols-4 gap-x-20 gap-y-10 my-auto mx-auto">
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Name</p>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              />
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Age</p>
+              <input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              />
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Gender</p>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="" className="text-black">
+                  Select
+                </option>
+                <option value="MALE">male</option>
+                <option value="FEMALE">female</option>
+                <option value="BOTH">bi-sexual</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Gender to Date</p>
+              <select
+                name="gtd"
+                value={formData.gtd}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="" className="text-black">
+                  Select
+                </option>
+                <option value="MALE">male</option>
+                <option value="FEMALE">female</option>
+                <option value="BOTH">both</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Education</p>
+              <select
+                name="education"
+                value={formData.education}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="" className="text-black">
+                  Select
+                </option>
+                <option value="HIGH_SCHOOL">High School</option>
+                <option value="UNDER_GRADUATE">College</option>
+                <option value="POST_GRADUATE">University</option>
+                <option value="PHD_GRADUATE">PHD</option>
+                <option value="NONE">none of the above</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Type of Dating</p>
+              <select
+                name="tod"
+                value={formData.tod}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="CASUAL">Casual</option>
+                <option value="SERIOUS">Serious</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Age to Date</p>
+              <select
+                name="atd"
+                value={formData.atd}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="18_">{" < 18"}</option>
+                <option value="18_21">18-21</option>
+                <option value="21_25">21-25</option>
+                <option value="25_30">25-30</option>
+                <option value="30_">30+</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Zodiac Sign</p>
+              <select
+                name="zodiac"
+                value={formData.zodiac}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="ARIES">Aries</option>
+                <option value="TAURUS">Taurus</option>
+                <option value="GEMINI">Gemini</option>
+                <option value="CANCER">Cancer</option>
+                <option value="LEO">Leo</option>
+                <option value="VIRGO">Virgo</option>
+                <option value="LIBRA">Libra</option>
+                <option value="SCORPIO">Scorpio</option>
+                <option value="SAGITTARIUS">Sagittarius</option>
+                <option value="CAPRICORN">Capricorn</option>
+                <option value="AQUARIUS">Aquarius</option>
+                <option value="PISCES">Pisces</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Ethnicity</p>
+              <select
+                name="ethnicity"
+                value={formData.ethnicity}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="WHITE">White</option>
+                <option value="MIXED">Mixed</option>
+                <option value="ASIAN">Asian</option>
+                <option value="BLACK">Black</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Ethnicity Choice
+              </p>
+              <select
+                name="ethnicityChoice"
+                value={formData.ethnicityChoice}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="WHITE">White</option>
+                <option value="MIXED">Mixed</option>
+                <option value="ASIAN">Asian</option>
+                <option value="BLACK">Black</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Sports Interest
+              </p>
+              <select
+                name="Sports"
+                value={formData.Sports}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="CRICKET">Cricket</option>
+                <option value="FOOTBALL">Football</option>
+                <option value="TENNIS">Tennis</option>
+                <option value="BASKETBALL">Basketball</option>
+                <option value="GOLF">Golf</option>
+                <option value="BADMINTON">Badminton</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Movie Preference
+              </p>
+              <select
+                name="Movies"
+                value={formData.Movies}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Cooking Interest
+              </p>
+              <select
+                name="Cooking"
+                value={formData.Cooking}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Fitness Interest
+              </p>
+              <select
+                name="Fitness"
+                value={formData.Fitness}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Travelling Interest
+              </p>
+              <select
+                name="Travelling"
+                value={formData.Travelling}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">Art and Craft</p>
+              <select
+                name="art"
+                value={formData.art}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Coffee or Tea Preference
+              </p>
+              <select
+                name="CoffeeorTea"
+                value={formData.CoffeeorTea}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="" className="text-black">
+                  Select
+                </option>
+                <option value="coffee">Coffee</option>
+                <option value="tea">Tea</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black"> Pet Lover</p>
+              <select
+                name="PetLover"
+                value={formData.PetLover}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Personality Type
+              </p>
+              <select
+                name="Personality"
+                value={formData.Personality}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="introvert">Introvert</option>
+                <option value="extrovert">Extrovert</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Alcohol Consumption
+              </p>
+              <select
+                name="Alcoholic"
+                value={formData.Alcoholic}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Smoking Preference
+              </p>
+              <select
+                name="Smoking"
+                value={formData.Smoking}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Spiritual Inclination
+              </p>
+              <select
+                name="Spiritual"
+                value={formData.Spiritual}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="SPIRITUAL">Spiritual</option>
+                <option value="AETHIST">Atheist</option>
+                <option value="NONE">None</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Relationship Status
+              </p>
+              <select
+                name="Relationship"
+                value={formData.Relationship}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="SINGLE">Single</option>
+                <option value="DIVORCED">Divorced</option>
+                <option value="MARRIED">Married</option>
+              </select>
+            </label>
+            <label className="flex flex-col">
+              <p className="font-semibold text-lg text-black">
+                Dietary Preference
+              </p>
+              <select
+                name="Dietary"
+                value={formData.Dietary}
+                onChange={handleChange}
+                className="text-black mt-2 text-md px-4 py-1 rounded-lg border border-gray-400 shadow-md"
+              >
+                <option value="">Select</option>
+                <option value="VEGETARIAN">Vegetarian</option>
+                <option value="NON_VEGERTARIAN">Non-Vegetarian</option>
+                <option value="VEGAN">Vegan</option>
+              </select>
+            </label>
+          </div>
+          <br />
+          <div className="mx-auto flex justify-center mt-10">
+            <label className="text-black flex flex-col justify-center mx-auto">
+              <p className="font-semibold text-xl text-center">
+                Image for your Profile
+              </p>
+              <div className="mt-10 border-4 border-dotted border-gray-400 rounded-xl">
+                <Dropzone
+                  onDrop={(acceptedFiles) => {
+                    if (acceptedFiles.length > 0) {
+                      const selectedImage = acceptedFiles[0];
+                      console.log(selectedImage);
+                      setFormData({ ...formData, rawImage: selectedImage });
+                    }
+                  }}
+                >
+                  {({ getRootProps, getInputProps }) => (
+                    <section>
+                      <div {...getRootProps()}>
+                        <input {...getInputProps()} />
+                        <p className="cursor-pointer bg-white px-80 text-center py-40 rounded-xl text-black text-lg">
+                          click to select picture
+                        </p>
+                      </div>
+                    </section>
+                  )}
+                </Dropzone>
+              </div>
+            </label>
+          </div>
+          <br />
+          <div className="flex justify-center mx-auto mt-10 mb-10">
+            <button className="text-center text-blue-500 border-blue-500 px-16 font-semibold text-lg py-3 border rounded-xl hover:bg-blue-500 hover:text-white hover:scale-105 duration-150" type="submit">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
-export default Onboarding;
+export default dynamic(() => Promise.resolve(Onboarding), { ssr: false });
