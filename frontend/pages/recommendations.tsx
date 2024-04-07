@@ -434,9 +434,36 @@ const Recommendations = () => {
                       </ul>
                     </div>
                   )}
-                </div>
               </div>
-            )}
+              <div>
+                {allUsers.length > 0 && allUsersData.length > 0 && (
+                  <div>
+                    <ul>
+                      {allUsersData.map((userData, index) => (
+                        <li key={index}>
+                          <p>from all users</p>
+                          <p>name : {userData?.name}</p>
+                          <p>Age: {userData?.age}</p>
+                          <img src={userData?.image} alt="user image"></img>
+                          <button
+                            onClick={() =>
+                              handleRequestMatch(userData?.address)
+                            }
+                            className="bg-blue-500 text-white rounded-xl"
+                          >
+                            💜
+                          </button>
+                          <button className="bg-red-500 text-white rounded-xl">
+                            ❌
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+            )} 
           </TabPanel>
           <TabPanel>
             {matchRequests.length > 0 && matchRequestsData.length > 0 ? (
