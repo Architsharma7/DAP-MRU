@@ -1,6 +1,50 @@
 {
   "state": {
-    "users": [],
-    "matchRequests": []
+    "users": [
+      {
+        "address": "0xDc290400129FFAD2b7EF5D4ce732A430f84BB2A2",
+        "currentMatch": "0x0000000000000000000000000000000000000000",
+        "matches": 0,
+        "unmatches": 0,
+        "preferences": [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+        "extras": [0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+        "recommendations": []
+      },
+      {
+        "address": "0x850C56CE150DFF626206B749D618dca28f440794",
+        "currentMatch": "0x0000000000000000000000000000000000000000",
+        "matches": 0,
+        "unmatches": 0,
+        "preferences": [0, 0, 1, 0, 0, 2, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+        "extras": [0, 0, 0, 0, 0, 2, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+        "recommendations": []
+      },
+      {
+        "address": "0x59dD06141B4f32f47D7a265ea35Bfa253D9850dF",
+        "currentMatch": "0x0000000000000000000000000000000000000000",
+        "matches": 0,
+        "unmatches": 0,
+        "preferences": [0, 1, 1, 1, 2, 0, 0, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+        "extras": [0, 1, 0, 1, 2, 0, 0, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+        "recommendations": []
+      },
+      {
+        "address": "0x62C43323447899acb61C18181e34168903E033Bf",
+        "currentMatch": "0x0000000000000000000000000000000000000000",
+        "matches": 0,
+        "unmatches": 0,
+        "preferences": [0, 1, 0, null, 2, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+        "extras": [0, 2, 1, null, 2, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+        "recommendations": ["0x59dD06141B4f32f47D7a265ea35Bfa253D9850dF"]
+      }
+    ],
+    "matchRequests": [
+      {
+        "user1": "0x62C43323447899acb61C18181e34168903E033Bf",
+        "user2": "0x59dD06141B4f32f47D7a265ea35Bfa253D9850dF",
+        "timestamp": 1712585445,
+        "status": 0
+      }
+    ]
   }
 }

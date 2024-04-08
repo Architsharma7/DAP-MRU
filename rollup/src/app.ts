@@ -10,7 +10,7 @@ const mru = await MicroRollup({
   config: stackrConfig,
   actionSchemas: [createAccountSchema, ...Object.values(schemas)],
   isSandbox: true,
-  stateMachines: [datingStateMachine]
+  stateMachines: [datingStateMachine],
 });
 
 await mru.init();
