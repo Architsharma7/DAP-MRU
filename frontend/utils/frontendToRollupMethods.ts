@@ -1,4 +1,4 @@
-import { FormData } from "@/components/onboarding";
+import { FormData } from "@/pages/onboarding";
 
 import {
   TypeOfDating,

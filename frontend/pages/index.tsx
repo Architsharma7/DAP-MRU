@@ -6,10 +6,11 @@ import {
   useEmbeddedWallet,
   useUserWallets,
 } from "@dynamic-labs/sdk-react-core";
-import Onboarding from "@/components/onboarding";
+import Onboarding from "@/pages/onboarding";
 import { getAddress } from "@/firebase";
 import { useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 const signTransaction = async (primaryWallet: any) => {
   const publicClient = createPublicClient({
@@ -33,10 +34,10 @@ const signTransaction = async (primaryWallet: any) => {
 };
 
 const Home: React.FC = () => {
-  const { user, handleLogOut, primaryWallet } = useDynamicContext();
   const { userHasEmbeddedWallet } = useEmbeddedWallet();
   const userWallets = useUserWallets();
   const [userHasSignedUp, setUserHasSignedUp] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const checkUserSignUp = async () => {
@@ -49,34 +50,45 @@ const Home: React.FC = () => {
   }, [userWallets]);
 
   return (
-    <div className="">
-      {userHasEmbeddedWallet() ? (
-        <div>
-        </div>
-      ) : (
-        <DynamicWidget />
-      )}
-      {/* <div>
-        {userWallets &&
-          userWallets.map((wallet) => (
-            <p key={wallet.id}>
-              {wallet.address}:{" "}
-              {wallet.connected ? "Connected" : "Not connected"} {user?.email}
-              {userHasEmbeddedWallet()
-                ? "Has embedded wallet"
-                : "No embedded wallet"}
-            </p>
-          ))}
-      </div> */}
-      {userHasSignedUp ? (
-        <div>
-          <p> Welcome back {user?.email}</p>
-        </div>
-      ) : (
-        <Onboarding />
-      )}
+    <div>
+      <div className="w-screen">
+        <main className="main">
+          <div className="flex flex-col">
+            <div className="text-center text-3xl text-slate-600">
+              <p className="text-7xl text-blue-500 font-serif font-semibold">
+                DatingMRU
+              </p>
+              <p className="mt-7">
+                Find love and companionship on a platform designed for genuine
+                connections
+              </p>
+              <p>Join thousands of singles in discovering </p>
+              <p className=" ">romance and happiness together</p>
+            </div>
+            <div className="mt-10 flex justify-center mx-auto">
+              {userHasEmbeddedWallet() && userHasSignedUp ? (
+                <button
+                  onClick={() => router.push("/recommendations")}
+                  className="text-xl px-10 py-2 border-2 border-black rounded-xl hover:scale-110 duration-300"
+                >
+                  Go to Recommendations
+                </button>
+              ) : userHasEmbeddedWallet() && !userHasSignedUp ? (
+                <button
+                  onClick={() => router.push("/onboarding")}
+                  className="text-xl px-10 py-2 border-2 border-black rounded-xl hover:scale-110 duration-300"
+                >
+                  Onboard Now
+                </button>
+              ) : (
+                <DynamicWidget />
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
-}
+};
 
 export default dynamic(() => Promise.resolve(Home), { ssr: false });

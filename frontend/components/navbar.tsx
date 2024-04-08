@@ -1,11 +1,20 @@
 import React from "react";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
-import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import {
+  useDynamicContext,
+  useEmbeddedWallet,
+} from "@dynamic-labs/sdk-react-core";
 
 const Navbar = () => {
   const router = useRouter();
   const { user, handleLogOut, primaryWallet } = useDynamicContext();
+  const { userHasEmbeddedWallet } = useEmbeddedWallet();
+
+  const logout = async () => {
+    handleLogOut();
+    await router.push("/");
+  }
 
   return (
     <div className="w-screen">
@@ -17,14 +26,18 @@ const Navbar = () => {
         >
           Dating-MRU
         </p>
-        <div>
-          <button
-            className="text-center text-blue-500 border-blue-500 px-6 font-semibold text-md py-1 border rounded-xl hover:bg-blue-500 hover:text-white hover:scale-105 duration-150"
-            onClick={() => handleLogOut()}
-          >
-            log-out
-          </button>
-        </div>
+        {userHasEmbeddedWallet() ? (
+          <div>
+            <button
+              className="text-center text-blue-500 border-blue-500 px-6 font-semibold text-md py-1 border rounded-xl hover:bg-blue-500 hover:text-white hover:scale-105 duration-150"
+              onClick={() => logout()}
+            >
+              log-out
+            </button>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </div>
     </div>
   );
