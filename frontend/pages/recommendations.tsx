@@ -27,7 +27,7 @@ const Recommendations = () => {
   const [recommendedProfilesData, setRecommendedProfilesData] = useState<any[]>(
     []
   );
-  const [userMatchData, setUserMatchData] = useState<any>([]);
+  const [userMatchData, setUserMatchData] = useState<any>();
   const [matchRequests, setMatchRequests] = useState<MatchRequestType[]>([]);
   const [matchRequestsData, setMatchRequestsData] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<UserDataType[]>([]);
@@ -45,18 +45,30 @@ const Recommendations = () => {
         }
         const userMatchRequests = await getUserMatchRequests(userAddress);
         const allUsersData = await getAllUsers();
-        if (userData) {
+        if (userData && userMatchRequests) {
           const recommendedProfilesforUser = userData?.recommendations;
-          setRecommendedProfiles(recommendedProfilesforUser);
+          const filteredRecommendation = recommendedProfilesforUser.filter(
+            (recommendedProfile) => {
+              const isValid = userMatchRequests.find((matchRequest) => {
+                return matchRequest.user2 == recommendedProfile;
+              });
+
+              return isValid == undefined ? true : false;
+            }
+          );
+          setRecommendedProfiles(filteredRecommendation);
           const profilesData = await Promise.all(
-            recommendedProfilesforUser.map((address) => getUserData(address))
+            filteredRecommendation.map((address) => getUserData(address))
           );
           setRecommendedProfilesData(profilesData);
         }
         if (userMatchRequests) {
           setMatchRequests(userMatchRequests);
+          const filteredMatchRequests = userMatchRequests.filter(
+            (matchRequests) => matchRequests.user2 == userAddress
+          );
           const matchRequestsData = await Promise.all(
-            userMatchRequests.map(async (request) => {
+            filteredMatchRequests.map(async (request) => {
               const user1Data = await getUserData(request.user1);
               return user1Data;
             })
@@ -64,13 +76,43 @@ const Recommendations = () => {
           console.log(matchRequestsData);
           setMatchRequestsData(matchRequestsData);
         }
-        if (allUsersData) {
-          const filteredUsers = allUsersData.filter(
-            (user) =>
-              user.currentMatch ==
-                "0x0000000000000000000000000000000000000000" &&
-              user.address !== userAddress
-          );
+        if (allUsersData && userData && userMatchRequests) {
+          // TODO :  Filter the all user data , and only show the profile which atleast match the bare min 4 factors
+          // TODO : Also remove the profile if it is in match Request or already matched or in recommendation
+
+          const filteredUsers = allUsersData
+            .filter(
+              (user) =>
+                user.currentMatch ==
+                  "0x0000000000000000000000000000000000000000" &&
+                user.address !== userAddress &&
+                userData.preferences[2] == user.extras[2]
+            )
+            .filter((user) => {
+              const isValid = userData.recommendations.find(
+                (recommendation) => {
+                  return recommendation == user.address;
+                }
+              );
+              console.log(isValid);
+
+              return isValid == undefined ? true : false;
+            })
+            .filter((user) => {
+              const isValid = userData.currentMatch != user.address;
+              console.log(isValid);
+
+              return isValid;
+            })
+            .filter((user) => {
+              const isValid = userMatchRequests.find((matchRequest) => {
+                return matchRequest.user2 == user.address;
+              });
+              console.log(isValid);
+
+              return isValid == undefined ? true : false;
+            });
+
           setAllUsers(filteredUsers);
           const usersData = await Promise.all(
             filteredUsers.map(async (user) => {
@@ -158,285 +200,189 @@ const Recommendations = () => {
         <TabPanels>
           <TabPanel>
             {recommendedProfilesData.length > 0 &&
-            recommendedProfiles.length > 0 ? (
-              <div className="flex flex-col justify-center mx-auto">
-                <ul className="flex flex-col justify-center mx-auto">
-                  {recommendedProfilesData.map((userData, index) => (
-                    <li
-                      className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
-                      key={index}
-                    >
-                      <img
-                        src={userData?.image}
-                        alt="user image"
-                        className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
-                      ></img>
-                      <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">Name</p>
-                          <p className="text-lg text-black">{userData?.name}</p>
+              recommendedProfiles.length > 0 && (
+                <div className="flex flex-col justify-center mx-auto">
+                  <ul className="flex flex-col justify-center mx-auto">
+                    {recommendedProfilesData.map((userData, index) => (
+                      <li
+                        className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                        key={index}
+                      >
+                        <img
+                          src={userData?.image}
+                          alt="user image"
+                          className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
+                        ></img>
+                        <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">Name</p>
+                            <p className="text-lg text-black">
+                              {userData?.name}
+                            </p>
+                          </div>
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">Age</p>
+                            <p className="text-lg text-black">
+                              {userData?.age}
+                            </p>
+                          </div>
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">Gender</p>
+                            <p className="text-lg text-black">
+                              {userData?.gender}
+                            </p>
+                          </div>
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">Ethinicty</p>
+                            <p className="text-lg text-black">
+                              {userData?.ethnicity}
+                            </p>
+                          </div>
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">Zodiac</p>
+                            <p className="text-lg text-black">
+                              {userData?.zodiac}
+                            </p>
+                          </div>
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">
+                              Type of Dating prefered
+                            </p>
+                            <p className="text-lg text-black">
+                              {userData?.tod}
+                            </p>
+                          </div>
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">
+                              Favourite Sport
+                            </p>
+                            <p className="text-lg text-black">
+                              {userData?.preferences.Sports}
+                            </p>
+                          </div>
+                          <div className="flex flex-col justify-start">
+                            <p className="text-gray-600 text-sm">
+                              Likes Travelling
+                            </p>
+                            <p className="text-lg text-black">
+                              {userData?.preferences.Travelling}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">Age</p>
-                          <p className="text-lg text-black">{userData?.age}</p>
-                        </div>
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">Gender</p>
-                          <p className="text-lg text-black">
-                            {userData?.gender}
-                          </p>
-                        </div>
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">Ethinicty</p>
-                          <p className="text-lg text-black">
-                            {userData?.ethnicity}
-                          </p>
-                        </div>
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">Zodiac</p>
-                          <p className="text-lg text-black">
-                            {userData?.zodiac}
-                          </p>
-                        </div>
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">
-                            Type of Dating prefered
-                          </p>
-                          <p className="text-lg text-black">{userData?.tod}</p>
-                        </div>
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">
-                            Favourite Sport
-                          </p>
-                          <p className="text-lg text-black">
-                            {userData?.Sports}
-                          </p>
-                        </div>
-                        <div className="flex flex-col justify-start">
-                          <p className="text-gray-600 text-sm">
-                            Likes Travelling
-                          </p>
-                          <p className="text-lg text-black">
-                            {userData?.Travelling}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex w-full justify-evenly">
-                        <button
-                          onClick={() => handleRequestMatch(userData?.address)}
-                          className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
-                        >
-                          💜
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleRejectRecommended(userData?.address)
-                          }
-                          className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
-                        >
-                          ❌
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div>
-                <div>
-                  {recommendedProfilesData.length > 0 &&
-                    recommendedProfiles.length > 0 && (
-                      <div className="flex flex-col justify-center mx-auto">
-                        <ul className="flex flex-col justify-center mx-auto">
-                          {recommendedProfilesData.map((userData, index) => (
-                            <li
-                              className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
-                              key={index}
-                            >
-                              <img
-                                src={userData?.image}
-                                alt="user image"
-                                className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
-                              ></img>
-                              <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">Name</p>
-                                  <p className="text-lg text-black">
-                                    {userData?.name}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">Age</p>
-                                  <p className="text-lg text-black">
-                                    {userData?.age}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">
-                                    Gender
-                                  </p>
-                                  <p className="text-lg text-black">
-                                    {userData?.gender}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">
-                                    Ethinicty
-                                  </p>
-                                  <p className="text-lg text-black">
-                                    {userData?.ethnicity}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">
-                                    Zodiac
-                                  </p>
-                                  <p className="text-lg text-black">
-                                    {userData?.zodiac}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">
-                                    Type of Dating prefered
-                                  </p>
-                                  <p className="text-lg text-black">
-                                    {userData?.tod}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">
-                                    Favourite Sport
-                                  </p>
-                                  <p className="text-lg text-black">
-                                    {userData?.Sports}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-start">
-                                  <p className="text-gray-600 text-sm">
-                                    Likes Travelling
-                                  </p>
-                                  <p className="text-lg text-black">
-                                    {userData?.Travelling}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex w-full justify-evenly">
-                                <button
-                                  onClick={() =>
-                                    handleRequestMatch(userData?.address)
-                                  }
-                                  className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
-                                >
-                                  💜
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleRejectRecommended(userData?.address)
-                                  }
-                                  className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
-                                >
-                                  ❌
-                                </button>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                </div>
-                <div>
-                  {allUsers.length > 0 && allUsersData.length > 0 && (
-                    <div className="flex flex-col justify-center mx-auto">
-                      <ul className="flex flex-col justify-center mx-auto">
-                        {allUsersData.map((userData, index) => (
-                          <li
-                            className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
-                            key={index}
+                        <div className="flex w-full justify-evenly">
+                          <button
+                            onClick={() =>
+                              handleRequestMatch(userData?.address)
+                            }
+                            className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
                           >
-                            <img
-                              src={userData?.image}
-                              alt="user image"
-                              className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
-                            ></img>
-                            <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">Name</p>
-                                <p className="text-lg text-black">
-                                  {userData?.name}
-                                </p>
-                              </div>
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">Age</p>
-                                <p className="text-lg text-black">
-                                  {userData?.age}
-                                </p>
-                              </div>
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">Gender</p>
-                                <p className="text-lg text-black">
-                                  {userData?.gender}
-                                </p>
-                              </div>
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">
-                                  Ethinicty
-                                </p>
-                                <p className="text-lg text-black">
-                                  {userData?.ethnicity}
-                                </p>
-                              </div>
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">Zodiac</p>
-                                <p className="text-lg text-black">
-                                  {userData?.zodiac}
-                                </p>
-                              </div>
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">
-                                  Type of Dating prefered
-                                </p>
-                                <p className="text-lg text-black">
-                                  {userData?.tod}
-                                </p>
-                              </div>
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">
-                                  Favourite Sport
-                                </p>
-                                <p className="text-lg text-black">
-                                  {userData?.Sports}
-                                </p>
-                              </div>
-                              <div className="flex flex-col justify-start">
-                                <p className="text-gray-600 text-sm">
-                                  Likes Travelling
-                                </p>
-                                <p className="text-lg text-black">
-                                  {userData?.Travelling}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex w-full justify-evenly">
-                              <button
-                                onClick={() =>
-                                  handleRequestMatch(userData?.address)
-                                }
-                                className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
-                              >
-                                💜
-                              </button>
-                              <button className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2">
-                                ❌
-                              </button>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                            💜
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleRejectRecommended(userData?.address)
+                            }
+                            className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                          >
+                            ❌
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
+            <div>
+              <div>
+                {allUsers.length > 0 && allUsersData.length > 0 && (
+                  <div className="flex flex-col justify-center mx-auto">
+                    <ul className="flex flex-col justify-center mx-auto">
+                      {allUsersData.map((userData, index) => (
+                        <li
+                          className={`border border-gray-400 mt-10 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                          key={index}
+                        >
+                          <img
+                            src={userData?.image}
+                            alt="user image"
+                            className={`w-full h-[450px] items-center mx-auto rounded-xl flex justify-center`}
+                          ></img>
+                          <div className="px-5 py-5 grid grid-flow-col grid-rows-4 grid-cols-2 gap-x-2 gap-y-2">
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">Name</p>
+                              <p className="text-lg text-black">
+                                {userData?.name}
+                              </p>
+                            </div>
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">Age</p>
+                              <p className="text-lg text-black">
+                                {userData?.age}
+                              </p>
+                            </div>
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">Gender</p>
+                              <p className="text-lg text-black">
+                                {userData?.gender}
+                              </p>
+                            </div>
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">Ethinicty</p>
+                              <p className="text-lg text-black">
+                                {userData?.ethnicity}
+                              </p>
+                            </div>
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">Zodiac</p>
+                              <p className="text-lg text-black">
+                                {userData?.zodiac}
+                              </p>
+                            </div>
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">
+                                Type of Dating prefered
+                              </p>
+                              <p className="text-lg text-black">
+                                {userData?.tod}
+                              </p>
+                            </div>
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">
+                                Favourite Sport
+                              </p>
+                              <p className="text-lg text-black">
+                                {userData?.preferences.Sports}
+                              </p>
+                            </div>
+                            <div className="flex flex-col justify-start">
+                              <p className="text-gray-600 text-sm">
+                                Likes Travelling
+                              </p>
+                              <p className="text-lg text-black">
+                                {userData?.preferences.Travelling}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex w-full justify-evenly">
+                            <button
+                              onClick={() =>
+                                handleRequestMatch(userData?.address)
+                              }
+                              className="bg-blue-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2"
+                            >
+                              💜
+                            </button>
+                            <button className="bg-red-500 text-white rounded-xl w-1/2 px-2 py-2 mx-2">
+                              ❌
+                            </button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </TabPanel>
           <TabPanel>
             {matchRequests.length > 0 && matchRequestsData.length > 0 ? (
@@ -504,7 +450,7 @@ const Recommendations = () => {
                                   Favourite Sport
                                 </p>
                                 <p className="text-lg text-black">
-                                  {matchRequestsData[index]?.Sports}
+                                  {matchRequestsData[index]?.preferences.Sports}
                                 </p>
                               </div>
                               <div className="flex flex-col justify-start">
@@ -512,7 +458,10 @@ const Recommendations = () => {
                                   Likes Travelling
                                 </p>
                                 <p className="text-lg text-black">
-                                  {matchRequestsData[index]?.Travelling}
+                                  {
+                                    matchRequestsData[index]?.preferences
+                                      .Travelling
+                                  }
                                 </p>
                               </div>
                             </div>
@@ -596,13 +545,13 @@ const Recommendations = () => {
                     <div className="flex flex-col justify-start">
                       <p className="text-gray-600 text-sm">Favourite Sport</p>
                       <p className="text-lg text-black">
-                        {userMatchData?.Sports}
+                        {userMatchData?.preferences.Sports}
                       </p>
                     </div>
                     <div className="flex flex-col justify-start">
                       <p className="text-gray-600 text-sm">Likes Travelling</p>
                       <p className="text-lg text-black">
-                        {userMatchData?.Travelling}
+                        {userMatchData?.preferences.Travelling}
                       </p>
                     </div>
                   </div>
