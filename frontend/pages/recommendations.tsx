@@ -106,7 +106,10 @@ const Recommendations = () => {
             })
             .filter((user) => {
               const isValid = userMatchRequests.find((matchRequest) => {
-                return matchRequest.user2 == user.address;
+                return (
+                  matchRequest.user2 == user.address ||
+                  matchRequest.user1 == user.address
+                );
               });
               console.log(isValid);
 
@@ -497,10 +500,10 @@ const Recommendations = () => {
             )}
           </TabPanel>
           <TabPanel>
-            <div>
+            <div className="flex flex-col justify-center mx-auto">
               {userMatchData ? (
                 <div
-                  className={`border border-gray-400 flex flex-col shadow-lg rounded-xl w-[500px] h-[760px]`}
+                  className={`border border-gray-400 flex flex-col  justify-center mx-auto shadow-lg rounded-xl w-[500px] h-[760px]`}
                 >
                   <img
                     src={userMatchData?.image}
