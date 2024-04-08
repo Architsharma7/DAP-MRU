@@ -1,16 +1,6 @@
 {
   "state": {
-    "users": [
-      {
-        "address": "0x62C43323447899acb61C18181e34168903E033Bf",
-        "currentMatch": "0x0000000000000000000000000000000000000000",
-        "matches": 0,
-        "unmatches": 0,
-        "preferences": [0, 1, 0, 1, 2, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0],
-        "extras": [0, 1, 1, 1, 2, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0],
-        "recommendations": []
-      }
-    ],
+    "users": [],
     "matchRequests": []
   }
 }
