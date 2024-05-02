@@ -13,24 +13,23 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 
 const signTransaction = async (primaryWallet: any) => {
-  const publicClient = createPublicClient({
-    transport: http("https://rpc.ankr.com/eth_goerli"),
-  });
+  if (!primaryWallet) {
+    return;
+  }
+  //@ts-ignore
+  const signer: Signer =
+    //@ts-ignore
+    (await primaryWallet?.connector?.ethers?.getSigner()) as Signer;
+  console.log(signer);
 
-  const client: WalletClient =
-    (await primaryWallet?.connector.getSigner()) as WalletClient;
+  const tx = await signer.signMessage("Hello, world!");
+  await console.log(tx);
 
-  const txRequest = {
-    to: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" as `0x${string}`,
-    value: BigInt(1),
-  };
+  // for signing the typed data
+  // const tx = await signer.signTypedData();
 
-  const txHash = await client.sendTransaction(txRequest);
-  console.log(`Success! Transaction broadcasted with hash ${txHash}`);
-  await publicClient.waitForTransactionReceipt({
-    hash: txHash,
-  });
-  console.log(txHash);
+  const address = await signer.getAddress();
+  console.log(address);
 };
 
 const Home: React.FC = () => {
@@ -38,6 +37,8 @@ const Home: React.FC = () => {
   const userWallets = useUserWallets();
   const [userHasSignedUp, setUserHasSignedUp] = useState(false);
   const router = useRouter();
+
+  const { primaryWallet } = useDynamicContext();
 
   useEffect(() => {
     const checkUserSignUp = async () => {

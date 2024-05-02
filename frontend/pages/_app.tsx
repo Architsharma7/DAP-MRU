@@ -9,6 +9,7 @@ import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "@/components/navbar";
 import localFont from "@next/font/local";
+import { EthersExtension } from "@dynamic-labs/ethers-v6";
 
 const myFont = localFont({ src: "./CalSans-SemiBold.woff2" });
 
@@ -20,6 +21,12 @@ export default function App({ Component, pageProps }: AppProps) {
           // environmentId: process.env.NEXT_PUBLIC_DYNAMIC_ENVIRONMENT_ID || "",
           environmentId: `2e9c0c2a-32a5-4c67-aa5e-5baedf5e58bc`,
           walletConnectors: [EthereumWalletConnectors],
+          walletConnectorExtensions: [EthersExtension],
+          eventsCallbacks : {
+            onAuthSuccess: (args) => {
+              console.log(args)
+            }
+          },
         }}
       >
         <DynamicWagmiConnector>
